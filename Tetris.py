@@ -21,6 +21,7 @@ class GUI:
 		self.TPIECE = pygame.image.load("tSquare24.png")
 		
 		
+		
 
 		font = pygame.font.SysFont("Arial Black", 90)
 		self.gameOverImage = font.render("GAME OVER", True, (255, 0, 0))
@@ -28,6 +29,7 @@ class GUI:
 		self.background = pygame.image.load("background24.png")
 		self.topCover = pygame.image.load("topCover24.png")
 		
+		self.currentPosition = ""
 		self.activePiece = []
 		self.playArea = []
 		self.lines = 22
@@ -83,13 +85,13 @@ class GUI:
 			self.playArea[0][6] = self.LPIECE
 			self.activePiece = [[1,4], [1,5], [1,6], [0,6]]
 			
-			
 		if piece == "linePiece":
 			self.playArea[0][3] = self.LINEPIECE
 			self.playArea[0][4] = self.LINEPIECE
 			self.playArea[0][5] = self.LINEPIECE
 			self.playArea[0][6] = self.LINEPIECE
 			self.activePiece = [[0,3], [0,4], [0,5], [0,6]]
+			self.currentPosition = "flat"
 			
 		if piece == "zPiece":
 			self.playArea[0][3] = self.ZPIECE
@@ -155,8 +157,18 @@ class GUI:
 						break
 			else:
 				self.newPiece()
+	def rotatePiece(self):
+		print("Hej!")
+		print(self.activePiece)
+		if self.playArea[self.activePiece[0][0]][self.activePiece[0][1]] == self.LINEPIECE:
+			print("Tjena!")
+			if self.currentPosition == "flat":
+				self.activePiece.sort()
+				self.activePiece.reverse()
+				
 			
-	
+		
+		
 	def lineLeft(self):
 		emptyBlockLeft = True
 		self.activePiece.sort(key = itemgetter(1))
@@ -268,6 +280,11 @@ class Main:
 				if e.type == self.GAMEEVENT:
 					gui.lineDown()
 					
+				if e.type == KEYDOWN:
+					if e.key == K_UP:
+						gui.rotatePiece()
+				
+				
 			keys = pygame.key.get_pressed()
 			if keys[pygame.K_DOWN]:
 				gui.lineDown()
