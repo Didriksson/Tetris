@@ -12,13 +12,13 @@ class GUI:
 		self.blockEmpty = True
 		
 		self.EMPTY = "EMPTY"
-		self.REVERSEL = pygame.image.load("reverseL24.png")
-		self.LPIECE = pygame.image.load("Lblock24.png")
-		self.LINEPIECE = pygame.image.load("lineBlock24.png")
-		self.ZPIECE = pygame.image.load("zBlock24.png")
-		self.REVERSEZ = pygame.image.load("reverseZ24.png")
-		self.SQUARE = pygame.image.load("square24.png")
-		self.TPIECE = pygame.image.load("tSquare24.png")
+		self.REVERSEL = pygame.image.load("data\\reverseL24.png")
+		self.LPIECE = pygame.image.load("data\\Lblock24.png")
+		self.LINEPIECE = pygame.image.load("data\\lineBlock24.png")
+		self.ZPIECE = pygame.image.load("data\\zBlock24.png")
+		self.REVERSEZ = pygame.image.load("data\\reverseZ24.png")
+		self.SQUARE = pygame.image.load("data\\square24.png")
+		self.TPIECE = pygame.image.load("data\\tSquare24.png")
 		
 		
 		
@@ -26,8 +26,8 @@ class GUI:
 		font = pygame.font.SysFont("Arial Black", 90)
 		self.gameOverImage = font.render("GAME OVER", True, (255, 0, 0))
 
-		self.background = pygame.image.load("background24.png")
-		self.topCover = pygame.image.load("topCover24.png")
+		self.background = pygame.image.load("data\\background24.png")
+		self.topCover = pygame.image.load("data\\topCover24.png")
 		
 		self.currentPosition = ""
 		self.activePiece = []
