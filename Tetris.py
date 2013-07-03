@@ -153,15 +153,43 @@ class GUI:
 						self.activePiece[index] = temp
 
 					else:
+						self.checkForFullLine()
 						self.newPiece()
 						break
 			else:
+				self.checkForFullLine()
 				self.newPiece()
+				
+	def checkForFullLine(self):
+		popList = []
+		fullLine = True
+		for index, line in enumerate(self.playArea):
+			fullLine = True
+			print "New line"
+			for block in line:
+				if(block == self.EMPTY):
+					fullLine = False
+
+			if fullLine:
+				print "Testing!"
+				popList.append(index)
+				
+
+
+			
+		if popList:
+			print "We are in sir!"
+			for item in popList:
+				self.playArea.pop(item)
+				temp = []
+				for col in range(0,self.cols):
+					temp.append(self.EMPTY)
+				self.playArea.reverse()
+				self.playArea.append(temp)
+				self.playArea.reverse()
+						
 	def rotatePiece(self):
-		print("Hej!")
-		print(self.activePiece)
 		if self.playArea[self.activePiece[0][0]][self.activePiece[0][1]] == self.LINEPIECE:
-			print("Tjena!")
 			if self.currentPosition == "flat":
 				self.activePiece.sort()
 				self.activePiece.reverse()
@@ -177,7 +205,6 @@ class GUI:
 		for index, item in enumerate(self.activePiece):
 				
 				if (item[1]-1) < 0 :
-					print "This is smaller!"
 					emptyBlockLeft = False
 					break
 				
@@ -186,7 +213,6 @@ class GUI:
 						temp = []
 						temp.append(item[0])
 						temp.append(item[1]-1)
-						print temp in self.activePiece
 						if self.playArea[item[0]][item[1]-1] != self.EMPTY and temp not in self.activePiece:							
 							emptyBlockLeft = False
 							break
@@ -209,12 +235,10 @@ class GUI:
 		self.activePiece.sort(key = itemgetter(1))
 		self.activePiece.reverse()
 		previousValue = self.activePiece[0][0]
-		print self.activePiece
 		#Check all lines to see if there is a block in the way.
 		for index, item in enumerate(self.activePiece):
 				
 				if (item[1]+1) >= self.cols:
-					print "This is bigger!"
 					emptyBlockRight = False
 					break
 				
@@ -223,7 +247,6 @@ class GUI:
 						temp = []
 						temp.append(item[0])
 						temp.append(item[1]+1)
-						print temp in self.activePiece
 						if self.playArea[item[0]][item[1]+1] != self.EMPTY and temp not in self.activePiece:							
 							emptyBlockRight = False
 							break
