@@ -35,9 +35,13 @@ class GUI:
 		
 
 		font = pygame.font.SysFont("Arial Black", 90)
+		
+		self.scoreFont = pygame.font.SysFont("Arial Black", 30)
+		self.score = self.scoreFont.render("0000000", True, (0,255,0))
+		
 		self.gameOverImage = font.render("GAME OVER", True, (255, 0, 0))
 
-		self.background = pygame.image.load("data\\background24.png")
+		self.background = pygame.image.load("data\\backgroundExtended.png")
 		self.topCover = pygame.image.load("data\\topCover24.png")
 		
 		self.currentPosition = ""
@@ -54,9 +58,10 @@ class GUI:
 
 		
 		
-		self.screen = pygame.display.set_mode((240,528), False)
+		self.screen = pygame.display.set_mode((440,528), False)
 		
 		self.screen.blit(self.background, (0,0))
+		
 		
 		self.newPiece()
 			
@@ -65,6 +70,7 @@ class GUI:
 	#Just as the name states this will take of redrawing the board.	
 	def reDraw(self):
 		self.screen.blit(self.background,(0,0))
+		self.screen.blit(self.score, (270,115))
 		for indexLine, line in enumerate(self.playArea):
 			y = indexLine * 24
 			for indexCol, item in enumerate(line):
