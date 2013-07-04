@@ -147,13 +147,16 @@ class GUI:
 			self.activePiece.reverse()
 			previousValue = self.activePiece[0][0]
 			
-			#check if none empty block below
-			for index, item in enumerate(self.activePiece):
-				if(item[0] == previousValue):
-					if (item[0]+1) < len(self.playArea) and (self.playArea[(previousValue+1)][item[1]] != self.EMPTY):
-						emptyBelow = False
-						break
-					
+			for index,item in enumerate(self.activePiece):
+				temp = []
+				temp.append(item[0]+1)
+				temp.append(item[1])
+				print self.activePiece
+				if (item[0]+1) < len(self.playArea) and (self.playArea[(item[0]+1)][item[1]] != self.EMPTY):
+					if temp in self.activePiece:
+						continue
+					emptyBelow = False
+					break
 
 			if emptyBelow:
 				for index, item in enumerate(self.activePiece):
@@ -517,6 +520,10 @@ class GUI:
 				else:
 					allWentWell = False
 					return allWentWell
+		#Check to to see if T-Piece
+		if self.playArea[self.activePiece[0][0]][self.activePiece[0][1]] == self.TPIECE:
+			pass
+	
 		
 		
 	#Is invoked whenever the user presses the left-key on the keyboard. This will take care of, you guessed it, moving the piece to the left.	
