@@ -52,7 +52,17 @@ class GUI:
 		
 		self.scoreFont = pygame.font.SysFont("Arial Black", 30)
 		
+		self.levelFont = pygame.font.SysFont("Arial Black", 20)
+		
 		self.gameOverImage = font.render("GAME OVER", True, (255, 0, 0))
+		
+		self.scoreTextFont = pygame.font.SysFont("Arial Black", 25)
+		self.scoreText = self.scoreTextFont.render("SCORE: ", True, (0,255,0))
+		
+		self.linesText = self.levelFont.render("LINES: ", True, (0,255,0))
+		
+		self.levelText = self.levelFont.render("LEVEL: ", True, (0,255,0))
+
 
 		self.background = pygame.image.load("data\\backgroundExtended.png")
 		self.topCover = pygame.image.load("data\\topCover24.png")
@@ -90,11 +100,22 @@ class GUI:
 	
 	#Scoring found on the following webpage: http://tetris.wikia.com/wiki/Scoring In order to have as authentic feeling as possible.
 	def updateScore(self):
-		self.score = self.scoreFont.render(str(self.currentScore).rjust(7,"0"), True, (0,255,0))
-		self.screen.blit(self.score, (270,150))
 		
-		self.linesScore = self.scoreFont.render(str(self.linesCleared), True, (0,255,0))
-		self.screen.blit(self.linesScore, (330,45))
+		
+		self.displayLevel = self.scoreFont.render(str(self.level).rjust(2,"0"), True, (0,255,0))
+		self.screen.blit(self.displayLevel, (372, 43))
+		
+		self.screen.blit(self.levelText, (270, 50))
+		
+		self.screen.blit(self.scoreText, (290,140))
+		
+		self.score = self.scoreFont.render(str(self.currentScore).rjust(7,"0"), True, (0,255,0))
+		self.screen.blit(self.score, (270,175))
+		
+		self.linesScore = self.scoreFont.render(str(self.linesCleared).rjust(3,"0"), True, (0,255,0))
+		self.screen.blit(self.linesScore, (354,90))
+		self.screen.blit(self.linesText, ( 270, 98))
+
 
 	
 	#Just as the name states this will take of redrawing the board.	
@@ -275,7 +296,12 @@ class GUI:
 				self.playArea.reverse()
 				self.playArea.append(temp)
 				self.playArea.reverse()
-	
+			
+
+			if(self.linesCleared >= ((self.level * 10) + 10)):
+				self.levelUp()
+
+				
 	#Handles rotations of the piece. Yet to be implemented.
 	def rotatePiece(self):
 		self.adjustMoveY = 0 
@@ -1274,7 +1300,10 @@ class GUI:
 			self.nextPieces.append(self.TPIECEMINI)
 			# self.addPiece("tPiece")
 			
-
+	def levelUp(self):
+		self.level = self.level + 1
+		main.speedDown = int((main.speedDown * 0.9)) 
+		pygame.time.set_timer(main.GAMEEVENT, main.speedDown)
 	
 	#Handles display of the coming pieces
 	def piecesList(self):
@@ -1290,11 +1319,12 @@ class Main:
 		self.running = True
 		self.clock = pygame.time.Clock()
 		self.GAMEEVENT = USEREVENT +1
-		pygame.time.set_timer(self.GAMEEVENT, 750)
+		self.speedDown = 750
+		pygame.time.set_timer(self.GAMEEVENT, self.speedDown)
 		self.gameOver = False
 		pygame.mixer.music.load("data\\tetris_theme1.mid")
 		pygame.mixer.music.play(-1)
-	
+		
 	#The main part of the program. The loop which will handle everything from updates to event-handling.
 	def loop(self):
 
