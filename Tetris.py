@@ -289,7 +289,7 @@ class GUI:
 			if self.currentPosition == "flat":
 				self.activePiece.sort()
 					
-				if (self.activePiece[0][1]+1) < self.cols:
+				if (self.activePiece[0][1]+1) < self.cols and not self.activePiece[0][0] <2:
 							
 					#Move first piece
 					moveX = 1 + self.adjustMoveX
