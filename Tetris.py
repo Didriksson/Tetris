@@ -19,6 +19,9 @@ class GUI:
 	def init(self):
 		pygame.init()
 		
+		self.nextPieces = []
+		
+		
 		
 		self.blockEmpty = True
 		
@@ -31,13 +34,23 @@ class GUI:
 		self.SQUARE = pygame.image.load("data\\square24.png")
 		self.TPIECE = pygame.image.load("data\\tSquare24.png")
 		
+		self.TPIECEMINI = pygame.image.load("data\\tPieceMini.png")
+		self.ZPIECEMINI = pygame.image.load("data\\zPieceMini.png")
+		self.REVERSEZMINI = pygame.image.load("data\\reverseZmini.png")
+		self.LPIECEMINI = pygame.image.load("data\\LPieceMini.png")
+		self.REVERSELMINI = pygame.image.load("data\\reverseLMini.png")
+		self.LINEPIECEMINI = pygame.image.load("data\\linePieceMini.png")
+		self.SQUAREMINI = pygame.image.load("data\\squarePieceMini.png")		
+		
+
+		self.level = 0
+		
 		
 		
 
-		font = pygame.font.SysFont("Arial Black", 90)
+		font = pygame.font.SysFont("Arial Black", 50)
 		
 		self.scoreFont = pygame.font.SysFont("Arial Black", 30)
-		self.score = self.scoreFont.render("0000000", True, (0,255,0))
 		
 		self.gameOverImage = font.render("GAME OVER", True, (255, 0, 0))
 
@@ -49,6 +62,11 @@ class GUI:
 		self.playArea = []
 		self.lines = 22
 		self.cols = 10
+		self.piecePushedDown = False
+		
+		
+		self.currentScore = 0
+		self.linesCleared = 0
 		
 		for line in range(0,self.lines):
 			temp = []
@@ -62,15 +80,27 @@ class GUI:
 		
 		self.screen.blit(self.background, (0,0))
 		
-		
 		self.newPiece()
+		self.newPiece()
+		self.newPiece()
+		
+		self.addPiece()
 			
 		self.reDraw()
+	
+	#Scoring found on the following webpage: http://tetris.wikia.com/wiki/Scoring In order to have as authentic feeling as possible.
+	def updateScore(self):
+		self.score = self.scoreFont.render(str(self.currentScore).rjust(7,"0"), True, (0,255,0))
+		self.screen.blit(self.score, (270,150))
 		
+		self.linesScore = self.scoreFont.render(str(self.linesCleared), True, (0,255,0))
+		self.screen.blit(self.linesScore, (330,45))
+
+	
 	#Just as the name states this will take of redrawing the board.	
 	def reDraw(self):
 		self.screen.blit(self.background,(0,0))
-		self.screen.blit(self.score, (270,115))
+		self.updateScore()
 		for indexLine, line in enumerate(self.playArea):
 			y = indexLine * 24
 			for indexCol, item in enumerate(line):
@@ -79,24 +109,27 @@ class GUI:
 					self.screen.blit(item, (x,y))
 					self.screen.blit(gui.topCover,(0,0))
 					
-			
+		self.piecesList()
+	
 		pygame.display.flip()
 
 
 	#Adds a piece to the board. Will receive a call from the "new piece" function in order to know which piece to add.	
-	def addPiece(self, piece):
-	
-		if piece == "reverseL":
+	def addPiece(self):
+		if self.nextPieces[0] == self.REVERSELMINI:
+			self.nextPieces.pop(0)
+			self.newPiece()
 			self.activePiece = []
 			self.playArea[0][4] = self.REVERSEL
 			self.playArea[1][4] = self.REVERSEL
 			self.playArea[1][5] = self.REVERSEL
 			self.playArea[1][6] = self.REVERSEL
 			self.currentPosition = "up"
-			
 			self.activePiece = [[0,4], [1,4], [1,5], [1,6]]
 			
-		if piece == "L":			
+		elif self.nextPieces[0] == self.LPIECEMINI:	
+			self.nextPieces.pop(0)
+			self.newPiece()		
 			self.playArea[1][4] = self.LPIECE
 			self.playArea[1][5] = self.LPIECE
 			self.playArea[1][6] = self.LPIECE
@@ -104,16 +137,9 @@ class GUI:
 			self.activePiece = [[1,4], [1,5], [1,6], [0,6]]
 			self.currentPosition = "up"
 			
-
-
-			
-			
-			
-			
-			
-			
-			
-		if piece == "linePiece":
+		elif self.nextPieces[0] == self.LINEPIECEMINI:
+			self.nextPieces.pop(0)
+			self.newPiece()
 			self.playArea[0][3] = self.LINEPIECE
 			self.playArea[0][4] = self.LINEPIECE
 			self.playArea[0][5] = self.LINEPIECE
@@ -121,7 +147,9 @@ class GUI:
 			self.activePiece = [[0,3], [0,4], [0,5], [0,6]]
 			self.currentPosition = "flat"
 			
-		if piece == "zPiece":
+		elif self.nextPieces[0] ==  self.ZPIECEMINI:
+			self.nextPieces.pop(0)
+			self.newPiece()
 			self.playArea[0][3] = self.ZPIECE
 			self.playArea[0][4] = self.ZPIECE
 			self.playArea[1][4] = self.ZPIECE
@@ -130,7 +158,9 @@ class GUI:
 			self.currentPosition = "flat"
 
 			
-		if piece == "reverseZ":
+		elif self.nextPieces[0] == self.REVERSEZMINI:
+			self.nextPieces.pop(0)
+			self.newPiece()
 			self.playArea[1][3] = self.REVERSEZ
 			self.playArea[1][4] = self.REVERSEZ
 			self.playArea[0][4] = self.REVERSEZ
@@ -138,7 +168,9 @@ class GUI:
 			self.activePiece = [[1,3], [1,4], [0,4], [0,5]]
 			self.currentPosition = "flat"
 			
-		if piece == "square":
+		elif self.nextPieces[0] == self.SQUAREMINI:
+			self.nextPieces.pop(0)
+			self.newPiece()
 			self.playArea[0][3] = self.SQUARE
 			self.playArea[0][4] = self.SQUARE
 			self.playArea[1][3] = self.SQUARE
@@ -146,7 +178,9 @@ class GUI:
 			self.activePiece = [[0,3], [0,4], [1,3], [1,4]]
 
 			
-		if piece == "tPiece":
+		elif self.nextPieces[0] ==  self.TPIECEMINI:
+			self.nextPieces.pop(0)
+			self.newPiece()
 			self.playArea[1][3] = self.TPIECE
 			self.playArea[1][4] = self.TPIECE
 			self.playArea[1][5] = self.TPIECE
@@ -157,7 +191,7 @@ class GUI:
 		
 	#Takes care of moving the board down one line, this can be called either when the user presses the down key, or as the piece is falling down.
 	def lineDown(self):
-	
+			
 			emptyBelow = True
 			self.activePiece.sort()
 			self.activePiece.reverse()
@@ -171,6 +205,8 @@ class GUI:
 					if temp in self.activePiece:
 						continue
 					emptyBelow = False
+					if (item[0]<2):
+						main.gameOver = True
 					break
 
 			if emptyBelow:
@@ -185,11 +221,16 @@ class GUI:
 
 					else:
 						self.checkForFullLine()
-						self.newPiece()
+						self.addPiece()
 						break
+
+						
+				if(self.piecePushedDown):
+					self.currentScore = self.currentScore + 1
 			else:
 				self.checkForFullLine()
-				self.newPiece()
+				self.addPiece()
+
 	
 	#Checks for full lines on the board. As soon as it finds a full line, it will pop them and replace with an empty line at the top.
 	def checkForFullLine(self):
@@ -208,6 +249,24 @@ class GUI:
 
 			
 		if popList:
+			numberOfLines = len(popList)
+			if numberOfLines == 1:
+				self.linesCleared = self.linesCleared + 1
+				scoreToAdd = 40 * (self.level + 1)
+				self.currentScore = self.currentScore + scoreToAdd
+			elif numberOfLines == 2:
+				self.linesCleared = self.linesCleared + 2
+				scoreToAdd = 100 * (self.level + 1)
+				self.currentScore = self.currentScore + scoreToAdd
+			elif numberOfLines == 3:
+				self.linesCleared = self.linesCleared + 3			
+				scoreToAdd = 300 * (self.level + 1)
+				self.currentScore = self.currentScore + scoreToAdd
+			elif numberOfLines == 4:
+				self.linesCleared = self.linesCleared + 4
+				scoreToAdd = 1200 * (self.level + 1)
+				self.currentScore = self.currentScore + scoreToAdd
+			
 			for item in popList:
 				self.playArea.pop(item)
 				temp = []
@@ -932,7 +991,6 @@ class GUI:
 			allWentWell = False
 			if self.currentPosition == "up":
 				self.activePiece.sort()
-				print self.activePiece
 				if (self.activePiece[1][1]) < self.cols and (self.activePiece[1][0] +1) < len(self.playArea):
 					#Move first piece
 
@@ -1031,7 +1089,6 @@ class GUI:
 				self.activePiece.sort()
 				
 				if (self.activePiece[0][1]) >= 0:
-					print self.activePiece		
 					#Move first piece
 					moveX = 0 + self.adjustMoveX
 					moveY = 0 + self.adjustMoveY
@@ -1077,7 +1134,7 @@ class GUI:
 
 			if self.currentPosition == "left":
 				self.activePiece.sort()
-				if (self.activePiece[1][1]+1) <self.cols:
+				if (self.activePiece[3][1]+1) <self.cols:
 							
 					#Move first piece
 					moveX = 0 + self.adjustMoveX
@@ -1196,19 +1253,35 @@ class GUI:
 	def newPiece(self):
 		randomedPiece = random.randint(0, 6)
 		if randomedPiece == 0:
-			self.addPiece("reverseL")
+			self.nextPieces.append(self.REVERSELMINI)
+			# self.addPiece("reverseL")
 		elif randomedPiece == 1:
-			self.addPiece("L")
+			self.nextPieces.append(self.LPIECEMINI)
+			# self.addPiece("L")
 		elif randomedPiece == 2:
-			self.addPiece("linePiece")
+			self.nextPieces.append(self.LINEPIECEMINI)
+			# self.addPiece("linePiece")
 		elif randomedPiece == 3:
-			self.addPiece("zPiece")
+			self.nextPieces.append(self.ZPIECEMINI)
+			# self.addPiece("zPiece")
 		elif randomedPiece == 4:
-			self.addPiece("reverseZ")
+			self.nextPieces.append(self.REVERSEZMINI)
+			# self.addPiece("reverseZ")
 		elif randomedPiece == 5:
-			self.addPiece("square")
+			self.nextPieces.append(self.SQUAREMINI)
+			# self.addPiece("square")
 		elif randomedPiece == 6:
-			self.addPiece("tPiece")
+			self.nextPieces.append(self.TPIECEMINI)
+			# self.addPiece("tPiece")
+			
+
+	
+	#Handles display of the coming pieces
+	def piecesList(self):
+		for index, item in enumerate(self.nextPieces):
+			self.screen.blit(item, (310,((index + 1) * 80 + 180)))
+		
+		
 	
 #This class takes care of everything not closely related to the GUI.	
 class Main:
@@ -1229,12 +1302,17 @@ class Main:
 		while self.running:
 			
 			for e in pygame.event.get():
+			
 				if e.type == QUIT:
 					self.running = False
 				
 				if e.type == self.GAMEEVENT:
 					gui.lineDown()
-					
+			
+				if e.type == KEYUP:
+					if e.key == K_DOWN:
+						gui.piecePushedDown = False
+			
 				if e.type == KEYDOWN:
 					if e.key == K_UP:
 						gui.rotatePiece()
@@ -1244,7 +1322,9 @@ class Main:
 						gui.lineRight()
 			keys = pygame.key.get_pressed()
 			if keys[pygame.K_DOWN]:
+				gui.piecePushedDown = True
 				gui.lineDown()
+				gui.piecePushedDown = False
 			
 			if keys[pygame.K_LEFT]:
 				pass
@@ -1253,17 +1333,20 @@ class Main:
 				pass
 			
 			
-			gui.reDraw()
+			
 			if self.gameOver:
-				gui.screen.blit(gui.gameOverImage, (10,10))
-				self.running = False
+				gui.screen.blit(gui.gameOverImage, (45,60))
+			
+			else:
+				gui.reDraw()
 				
 			self.clock.tick(40)
 			pygame.display.flip()
 				
 
-		
+
 		pygame.quit()
+
 
 		
 gui = GUI()
