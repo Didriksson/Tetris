@@ -21,10 +21,11 @@ class Splash:
 		while self.running:
 			for n in range(255):
 				self.background.fill((0,0,0))
+				self.screen.fill((0,0,0))
 				self.splashImage.set_alpha(n)
 				self.screen.blit(self.splashImage,(0,0))
 				pygame.display.flip()
-				pygame.time.delay(40)
+				pygame.time.delay(15)
 
 			pygame.time.delay(2000)
 
@@ -34,14 +35,16 @@ class Splash:
 		
 			for n in range(255):
 				self.background.fill((0,0,0))
+				self.screen.fill((0,0,0))
 				self.splashImage.set_alpha(255-n)
 				self.screen.blit(self.splashImage,(0,0))
 				pygame.display.flip()
-				pygame.time.delay(40)
+				pygame.time.delay(15)
 				
 			self.running = False
 		pygame.quit()
 
-		splash = Splash()
+
+splash = Splash()
 splash.init()
 splash.main()
