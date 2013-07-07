@@ -8,6 +8,9 @@ This is a simple Tetris clone, made from scratch by me.
 """
 
 #! /usr/bin/env python
+#-*-coding:utf-8-*- 
+
+
 
 import pygame, random, os.path
 from pygame.locals import *
