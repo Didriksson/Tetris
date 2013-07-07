@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-import pygame, random, os.path
+import pygame, random, os.path, Tetris
 from pygame.locals import *
 from Tkinter import *
 from operator import itemgetter
@@ -7,7 +7,7 @@ from operator import itemgetter
 class Splash:
 	def init(self):
 		pygame.init()
-		self.screen = pygame.display.set_mode((400,200), False)
+		self.screen = pygame.display.set_mode((500,600), False)
 		self.background = pygame.Surface(self.screen.get_size())
 
 		self.finnished = False
@@ -26,9 +26,9 @@ class Splash:
 				self.background.fill((0,0,0))
 				self.screen.fill((0,0,0))
 				self.splashImage.set_alpha(self.count)
-				self.screen.blit(self.splashImage,(0,0))
+				self.screen.blit(self.splashImage,(50,150))
 				pygame.display.flip()
-				print self.count
+				self.count = self.count - 1
 				if self.count <0:
 					self.fadeIn = False
 					self.running = False
@@ -38,7 +38,7 @@ class Splash:
 				self.background.fill((0,0,0))
 				self.screen.fill((0,0,0))
 				self.splashImage.set_alpha(self.count)
-				self.screen.blit(self.splashImage,(0,0))
+				self.screen.blit(self.splashImage,(50,150))
 				pygame.display.flip()
 				self.count = self.count + 1
 				if self.count > 254:
@@ -49,7 +49,7 @@ class Splash:
 	def main(self):
 		while self.running:
 			self.fade()
-			self.clock.tick(40)
+			self.clock.tick(30)
 			for e in pygame.event.get():
 				if e.type == QUIT:
 					self.running = False
@@ -59,20 +59,20 @@ class Splash:
 						self.running = False
 					
 		menu = Menu()
-		menu.start()
+		menu.start(self.screen)
 		
 		
 
 		
-class Menu:
+class Menu():
 	
-	def start(self):
-		self.init()
+	def start(self, screen):
+		self.init(screen)
 		self.main()
 
-	def init(self):
-		pygame.init()
-		self.screen = pygame.display.set_mode((400, 600), False)
+	def init(self, sentScreen):
+		
+		self.screen = sentScreen
 
 		self.button = pygame.image.load(os.path.join('data','button.png'))
 		self.markedButton = pygame.image.load(os.path.join('data','markedButton.png'))
@@ -95,14 +95,14 @@ class Menu:
 			self.screen.blit(self.background,(0,0))
 			for n in range(4):
 				if self.choice == n:
-					self.screen.blit(self.markedButton, (40,n * 110 + 140))
+					self.screen.blit(self.markedButton, (90,n * 110 + 140))
 				else:
-					self.screen.blit(self.button, (40,n * 110 + 140))
+					self.screen.blit(self.button, (90,n * 110 + 140))
 			
-			self.screen.blit(self.start, (155, 152))
-			self.screen.blit(self.options, (140, 262))
-			self.screen.blit(self.highscore, (135, 372))
-			self.screen.blit(self.quit, (165, 482))
+			self.screen.blit(self.start, (205, 152))
+			self.screen.blit(self.options, (190, 262))
+			self.screen.blit(self.highscore, (185, 372))
+			self.screen.blit(self.quit, (215, 482))
 			pygame.display.flip()
 			self.clock.tick(20)
 			
@@ -114,9 +114,25 @@ class Menu:
 						if (self.choice < 3):
 							self.choice += 1
 					if e.key == K_UP:
-						if (self.choice > 0):
+						if self.choice > 0:
 							self.choice -= 1
-			
+
+							
+					if e.key == K_RETURN:
+						if self.choice == 0:
+							quit = Tetris.start(self.screen)
+							if quit:
+								self.running = False
+
+						if self.choice == 1:
+							pass
+								
+						if self.choice == 2:
+							loadData = Tetris.LoadData()
+						
+						if self.choice == 3:
+							self.running = False
+		
 		pygame.quit()
 			
 splash = Splash()

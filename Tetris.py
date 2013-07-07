@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: cp1252 -*-
 """
 Program created by mattias Didriksson as a project in "Multimediaprogrammering i Python".
 OS: Windows 7
@@ -7,8 +9,6 @@ This is a simple Tetris clone, made from scratch by me.
 
 """
 
-#! /usr/bin/env python
-#-*-coding:utf-8-*- 
 
 
 
@@ -20,8 +20,11 @@ from operator import itemgetter
 #The GUI class responsible for most of the program. Reason for that is because the GUI is such a central part of a program like Tetris.
 class GUI:
 	#A function which will initiate the class. I.e. set up windows, initiate attributes etc.
-	def init(self):
+	def init(self, sentScreen):
 		pygame.init()
+		
+		self.screen = sentScreen
+		self.screen.fill((0,0,0))
 		
 		self.nextPieces = []
 		
@@ -90,9 +93,7 @@ class GUI:
 
 		
 		
-		self.screen = pygame.display.set_mode((440,528), False)
-		
-		self.screen.blit(self.background, (0,0))
+		self.screen.blit(self.background, (24,0))
 		
 		self.newPiece()
 		self.newPiece()
@@ -107,32 +108,32 @@ class GUI:
 		
 		
 		self.displayLevel = self.scoreFont.render(str(self.level).rjust(2,"0"), True, (0,255,0))
-		self.screen.blit(self.displayLevel, (372, 43))
+		self.screen.blit(self.displayLevel, (387, 43))
 		
-		self.screen.blit(self.levelText, (270, 50))
+		self.screen.blit(self.levelText, (294, 50))
 		
-		self.screen.blit(self.scoreText, (290,140))
+		self.screen.blit(self.scoreText, (314,140))
 		
 		self.score = self.scoreFont.render(str(self.currentScore).rjust(7,"0"), True, (0,255,0))
-		self.screen.blit(self.score, (270,175))
+		self.screen.blit(self.score, (294,175))
 		
 		self.linesScore = self.scoreFont.render(str(self.linesCleared).rjust(3,"0"), True, (0,255,0))
-		self.screen.blit(self.linesScore, (354,90))
-		self.screen.blit(self.linesText, ( 270, 98))
+		self.screen.blit(self.linesScore, (378,90))
+		self.screen.blit(self.linesText, ( 294, 98))
 
 
 	
 	#Just as the name states this will take of redrawing the board.	
 	def reDraw(self):
-		self.screen.blit(self.background,(0,0))
+		self.screen.blit(self.background,(24,0))
 		self.updateScore()
 		for indexLine, line in enumerate(self.playArea):
 			y = indexLine * 24
 			for indexCol, item in enumerate(line):
-				x = indexCol * 24
+				x = indexCol * 24 + 24
 				if(item != "EMPTY"):
 					self.screen.blit(item, (x,y))
-					self.screen.blit(gui.topCover,(0,0))
+					self.screen.blit(gui.topCover,(24,0))
 					
 		self.piecesList()
 	
@@ -1480,25 +1481,25 @@ class GUI:
 		randomedPiece = random.randint(0, 6)
 		if randomedPiece == 0:
 			self.nextPieces.append(self.REVERSELMINI)
-			# self.addPiece("reverseL")
+
 		elif randomedPiece == 1:
 			self.nextPieces.append(self.LPIECEMINI)
-			# self.addPiece("L")
+
 		elif randomedPiece == 2:
 			self.nextPieces.append(self.LINEPIECEMINI)
-			# self.addPiece("linePiece")
+
 		elif randomedPiece == 3:
 			self.nextPieces.append(self.ZPIECEMINI)
-			# self.addPiece("zPiece")
+
 		elif randomedPiece == 4:
 			self.nextPieces.append(self.REVERSEZMINI)
-			# self.addPiece("reverseZ")
+
 		elif randomedPiece == 5:
 			self.nextPieces.append(self.SQUAREMINI)
-			# self.addPiece("square")
+		
 		elif randomedPiece == 6:
 			self.nextPieces.append(self.TPIECEMINI)
-			# self.addPiece("tPiece")
+			
 			
 	def levelUp(self):
 		self.level = self.level + 1
@@ -1508,7 +1509,7 @@ class GUI:
 	#Handles display of the coming pieces
 	def piecesList(self):
 		for index, item in enumerate(self.nextPieces):
-			self.screen.blit(item, (310,((index + 1) * 80 + 180)))
+			self.screen.blit(item, (334,((index + 1) * 80 + 180)))
 		
 		
 	
@@ -1528,13 +1529,14 @@ class Main:
 	#The main part of the program. The loop which will handle everything from updates to event-handling.
 	def loop(self):
 
-			
+		self.quit = False	
 		while self.running:
 			
 			for e in pygame.event.get():
 			
 				if e.type == QUIT:
 					self.running = False
+					self.quit = True
 				
 				if e.type == self.GAMEEVENT:
 					gui.lineDown()
@@ -1565,22 +1567,52 @@ class Main:
 			
 			
 			if self.gameOver:
-				gui.screen.blit(gui.gameOverImage, (45,60))
+				gui.screen.blit(gui.gameOverImage, (70,60))
 			
 			else:
 				gui.reDraw()
 				
 			self.clock.tick(40)
 			pygame.display.flip()
-				
-
-
-		pygame.quit()
-
-
 		
+		return self.quit
+
+
+class LoadData:
+
+
+	def readData(self):
+		self.highscoreList = []
+		self.newPlayer = True
+		try:
+			the_file = open("data.txt", "r")
+		except(IOError), e:
+			print "Nu gick något fel!", e
+			raw_input("Tryck på valfri tangent för att avsluta.")
+			sys.exit()
+		else:
+
+			for line in the_file:
+				if self.newPlayer:
+					self.player = line
+					self.player = self.player.replace("\n", "")
+					self.newPlayer = False
+				elif not self.newPlayer:
+					self.score = line
+					self.score = self.score.replace("\n", "")
+					self.newPlayer = True
+					self.highscoreList.append((self.player, self.score))
+
+			the_file.close()
+		return self.highscoreList		
+
+
+def start(screen):
+	gui.init(screen)
+	main.init()
+	shouldQuit = main.loop()
+	return shouldQuit
+	 
+
 gui = GUI()
 main = Main()
-gui.init()
-main.init()
-main.loop()
