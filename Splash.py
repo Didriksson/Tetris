@@ -120,16 +120,19 @@ class Menu():
 							
 					if e.key == K_RETURN:
 						if self.choice == 0:
-							quit = Tetris.start(self.screen)
-							if quit:
+							nextAction = Tetris.start(self.screen)
+							if nextAction == "QUIT":
 								self.running = False
-
+							if nextAction == "AGAIN":
+								nextAction = Tetris.start(self.screen)
+							if nextAction == "MENU":
+								pass
 						if self.choice == 1:
 							pass
-								
 						if self.choice == 2:
-							loadData = Tetris.LoadData()
-						
+							loadData = Tetris.HandleData()
+							print loadData.readData()
+							
 						if self.choice == 3:
 							self.running = False
 		

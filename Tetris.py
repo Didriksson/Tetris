@@ -28,7 +28,7 @@ class GUI:
 		
 		self.nextPieces = []
 		
-		
+		self.playAgainMarked = True
 		
 		self.blockEmpty = True
 		
@@ -49,30 +49,33 @@ class GUI:
 		self.LINEPIECEMINI = pygame.image.load(os.path.join('data','linePieceMini.png'))
 		self.SQUAREMINI = pygame.image.load(os.path.join('data','squarePieceMini.png'))		
 		
+		self.playAgainMenuImage = pygame.image.load(os.path.join('data','playAgainMenu.png'))
+		self.playAgainMenuButton = pygame.image.load(os.path.join('data','playAgainButton.png'))
+		self.playAgainMenuButtonMarked = pygame.image.load(os.path.join('data','playAgainButtonMarked.png'))
 
+		self.background = pygame.image.load(os.path.join('data','backgroundExtended.png'))
+		self.topCover = pygame.image.load(os.path.join('data','topCover24.png'))
+		
 		self.level = 0
 		
 		
 		
 
-		font = pygame.font.SysFont("Arial Black", 50)
-		
+		self.gameOverFont = pygame.font.SysFont("Arial Black", 50)
 		self.scoreFont = pygame.font.SysFont("Arial Black", 30)
-		
-		self.levelFont = pygame.font.SysFont("Arial Black", 20)
-		
-		self.gameOverImage = font.render("GAME OVER", True, (255, 0, 0))
-		
+		self.levelFont = pygame.font.SysFont("Arial Black", 20)	
 		self.scoreTextFont = pygame.font.SysFont("Arial Black", 25)
+		self.playAgainMenuFont = pygame.font.SysFont("SKETCHFLOW PRINT", 20)
+		
+		
+		self.gameOverImage = self.gameOverFont.render("GAME OVER", True, (255, 0, 0))
 		self.scoreText = self.scoreTextFont.render("SCORE: ", True, (0,255,0))
-		
 		self.linesText = self.levelFont.render("LINES: ", True, (0,255,0))
-		
 		self.levelText = self.levelFont.render("LEVEL: ", True, (0,255,0))
+		self.playAgainTextYes = self.playAgainMenuFont.render("YES", True, (255,255,255))
+		self.playAgainTextNo = self.playAgainMenuFont.render("NO", True, (255, 255, 255))
 
 
-		self.background = pygame.image.load(os.path.join('data','backgroundExtended.png'))
-		self.topCover = pygame.image.load(os.path.join('data','topCover24.png'))
 		
 		self.currentPosition = ""
 		self.activePiece = []
@@ -1511,8 +1514,22 @@ class GUI:
 		for index, item in enumerate(self.nextPieces):
 			self.screen.blit(item, (334,((index + 1) * 80 + 180)))
 		
+	#Displaying a pop up window for entering players name, this only happens if player is within the top 20.
+	def highscorePopUpWIndow(self):
+		pass
 		
-	
+	def playAgainMenu(self):
+		self.screen.blit(self.playAgainMenuImage, (70,200))
+		if self.playAgainMarked:
+			self.screen.blit(self.playAgainMenuButtonMarked, (105,260))
+			self.screen.blit(self.playAgainMenuButton, (225,260))
+		else:
+			self.screen.blit(self.playAgainMenuButton, (105,260))
+			self.screen.blit(self.playAgainMenuButtonMarked, (225,260))
+		self.screen.blit(self.playAgainTextYes, ( 135, 263))
+		self.screen.blit(self.playAgainTextNo, ( 263, 263))		
+		
+		
 #This class takes care of everything not closely related to the GUI.	
 class Main:
 	#Initiates the main class.
@@ -1529,56 +1546,79 @@ class Main:
 	#The main part of the program. The loop which will handle everything from updates to event-handling.
 	def loop(self):
 
-		self.quit = False	
+		self.returnValue = ""	
 		while self.running:
-			
-			for e in pygame.event.get():
-			
-				if e.type == QUIT:
-					self.running = False
-					self.quit = True
+			if not self.gameOver:
+				for e in pygame.event.get():
 				
-				if e.type == self.GAMEEVENT:
+					if e.type == QUIT:
+						self.running = False
+						self.returnValue = "QUIT"
+					
+					if e.type == self.GAMEEVENT:
+						gui.lineDown()
+				
+					if e.type == KEYUP:
+						if e.key == K_DOWN:
+							gui.piecePushedDown = False
+				
+					if e.type == KEYDOWN:
+						if e.key == K_UP:
+							gui.rotatePiece()
+						if e.key == K_LEFT:
+							gui.lineLeft()
+						if e.key == K_RIGHT:
+							gui.lineRight()
+				keys = pygame.key.get_pressed()
+				if keys[pygame.K_DOWN]:
+					gui.piecePushedDown = True
 					gui.lineDown()
-			
-				if e.type == KEYUP:
-					if e.key == K_DOWN:
-						gui.piecePushedDown = False
-			
-				if e.type == KEYDOWN:
-					if e.key == K_UP:
-						gui.rotatePiece()
-					if e.key == K_LEFT:
-						gui.lineLeft()
-					if e.key == K_RIGHT:
-						gui.lineRight()
-			keys = pygame.key.get_pressed()
-			if keys[pygame.K_DOWN]:
-				gui.piecePushedDown = True
-				gui.lineDown()
-				gui.piecePushedDown = False
-			
-			if keys[pygame.K_LEFT]:
-				pass
+					gui.piecePushedDown = False
 				
-			if keys[pygame.K_RIGHT]:
-				pass
-			
-			
-			
-			if self.gameOver:
-				gui.screen.blit(gui.gameOverImage, (70,60))
-			
+				if keys[pygame.K_LEFT]:
+					pass
+					
+				if keys[pygame.K_RIGHT]:
+					pass
+				
+				
+				
+				if self.gameOver:
+					gui.screen.blit(gui.gameOverImage, (70,60))
+				
+				else:
+					gui.reDraw()
+
+				self.clock.tick(40)
+				pygame.display.flip()
+
 			else:
-				gui.reDraw()
+				pygame.mixer.music.stop()
+				self.optionPicked = False
+				while not self.optionPicked:
+					for e in pygame.event.get():
+						if e.type == KEYDOWN:
+							if e.key == K_LEFT:
+								gui.playAgainMarked = True
+							if e.key == K_RIGHT:
+								gui.playAgainMarked = False
+							if e.key == K_RETURN:
+								if gui.playAgainMarked:
+									self.returnValue = "AGAIN"
+									self.optionPicked = True
+								else:
+									self.returnValue = "MENU"
+									self.optionPicked = True
+					gui.playAgainMenu()
+					self.clock.tick(40)
+					pygame.display.flip()
 				
-			self.clock.tick(40)
-			pygame.display.flip()
-		
-		return self.quit
+				return self.returnValue
+				
+		return self.returnValue
 
 
-class LoadData:
+class HandleData:
 
 
 	def readData(self):
@@ -1604,9 +1644,32 @@ class LoadData:
 					self.highscoreList.append((self.player, self.score))
 
 			the_file.close()
-		return self.highscoreList		
+		return self.highscoreList
 
+	def writeData(self):
+		self.currentList = self.readData()
+		self.score = self.currentScore()
+		self.player = "Albert"
+		
+		try:
+			the_file = open("data.txt", "w")
+		
+		except(IOError), e:
+			print "Nu gick något fel!", e
+			raw_input("Tryck på valfri tangent för att avsluta.")
+			sys.exit()
+		
+		else:
+			self.currentList.append(self.player + "\n")
+			self.currentList.append(self.score + "\n")
+			
+			print self.currentList
+			for item in self.currentList:
+				the_file.write(item)
+				
+			the_file.close()
 
+			
 def start(screen):
 	gui.init(screen)
 	main.init()
