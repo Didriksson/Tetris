@@ -58,6 +58,8 @@ class GUI:
 		self.background = pygame.image.load(os.path.join('data','backgroundExtended.png'))
 		self.topCover = pygame.image.load(os.path.join('data','topCover24.png'))
 		
+		self.highscorePopUpImage = pygame.image.load(os.path.join('data', 'highscorePopUp.png'))
+		
 		self.level = 0
 		
 		
@@ -68,6 +70,7 @@ class GUI:
 		self.levelFont = pygame.font.SysFont("Arial Black", 20)	
 		self.scoreTextFont = pygame.font.SysFont("Arial Black", 25)
 		self.playAgainMenuFont = pygame.font.SysFont("SKETCHFLOW PRINT", 20)
+		self.enterNameFont = pygame.font.SysFont("Arial Black", 15)
 		
 		
 		self.gameOverImage = self.gameOverFont.render("GAME OVER", True, (255, 0, 0))
@@ -78,13 +81,14 @@ class GUI:
 		self.playAgainTextNo = self.playAgainMenuFont.render("NO", True, (255, 255, 255))
 
 
-		
+		self.playerName = ""
 		self.currentPosition = ""
 		self.activePiece = []
 		self.playArea = []
 		self.lines = 22
 		self.cols = 10
 		self.piecePushedDown = False
+		self.madeHighScore = False
 		
 		
 		self.currentScore = 0
@@ -1531,18 +1535,49 @@ class GUI:
 		for index, item in enumerate(self.nextPieces):
 			self.screen.blit(item, (334,((index + 1) * 80 + 180)))
 		
-	#Displaying a pop up window for entering players name, this only happens if player is within the top 20.
-	def highscorePopUpWIndow(self):
-		pass
+	#Displaying a pop up window for entering players name, this only happens if player is within the top 20. Input box have been inspired from
+	#http://www.pygame.org/pcr/inputbox/
+	def highscorePopUpWindow(self):
+		enteredName = False
+		tempString = ""
+
 		
+		while not enteredName:
+			self.screen.blit(self.highscorePopUpImage, (70,200))
+			self.enterNameText = self.enterNameFont.render(tempString.upper(), True, (0, 0, 0))
+			self.screen.blit(self.enterNameText, (170,254))
+			for e in pygame.event.get():
+				if e.type == KEYDOWN:
+					if e.key == K_RETURN:
+						self.playerName = tempString.upper()
+						enteredName = True
+					elif e.key == K_BACKSPACE:
+						if tempString:
+							tempString = tempString[:-1]
+					
+					elif e.key <= 127:
+							if len(tempString) < 18:
+								tempString = tempString + chr(e.key)
+													
+			main.clock.tick(40)
+			pygame.display.flip()
+			
+		main.highscoreList.append((self.playerName, self.currentScore))
+		if len(main.highscoreList) >= 19:
+			main.highscoreList.sort(key = itemgetter(1))
+			main.highscoreList.reverse()
+			main.highscoreList.pop()
+			
+		data.writeData()
+			
 	def playAgainMenu(self):
 		self.screen.blit(self.playAgainMenuImage, (70,200))
 		if self.playAgainMarked:
-			self.screen.blit(self.playAgainMenuButtonMarked, (105,260))
-			self.screen.blit(self.playAgainMenuButton, (225,260))
-		else:
 			self.screen.blit(self.playAgainMenuButton, (105,260))
 			self.screen.blit(self.playAgainMenuButtonMarked, (225,260))
+		else:
+			self.screen.blit(self.playAgainMenuButtonMarked, (105,260))
+			self.screen.blit(self.playAgainMenuButton, (225,260))
 		self.screen.blit(self.playAgainTextYes, ( 135, 263))
 		self.screen.blit(self.playAgainTextNo, ( 263, 263))	
 
@@ -1565,6 +1600,11 @@ class Main:
 		self.MUSIC_ENDS = USEREVENT +2
 		
 		self.songlist = 1
+		
+		self.highscoreList = data.readData()
+		self.highscoreList.sort(key = itemgetter(1))
+		self.highscoreList.reverse()
+		print self.highscoreList
 		
 		pygame.mixer.music.set_endevent(self.MUSIC_ENDS)
 		pygame.mixer.music.load(os.path.join('data','stormeagle.mid'))
@@ -1639,6 +1679,16 @@ class Main:
 
 			else:
 				pygame.mixer.music.stop()
+				if len(self.highscoreList) <20:
+					gui.madeHighScore = True
+				else:
+					for item in self.highscoreList:
+						if gui.currentScore > item[1]:
+							gui.madeHighScore = True
+							break
+						
+				if gui.madeHighScore:
+					gui.highscorePopUpWindow()
 				self.optionPicked = False
 				while not self.optionPicked:
 					for e in pygame.event.get():
@@ -1686,15 +1736,12 @@ class HandleData:
 					self.score = line
 					self.score = self.score.replace("\n", "")
 					self.newPlayer = True
-					self.highscoreList.append((self.player, self.score))
+					self.highscoreList.append((self.player, int(self.score)))
 
 			the_file.close()
 		return self.highscoreList
 
 	def writeData(self):
-		self.currentList = self.readData()
-		self.score = self.currentScore()
-		self.player = "Albert"
 		
 		try:
 			the_file = open("data.txt", "w")
@@ -1705,13 +1752,10 @@ class HandleData:
 			sys.exit()
 		
 		else:
-			self.currentList.append(self.player + "\n")
-			self.currentList.append(self.score + "\n")
+			for item in main.highscoreList:
+				the_file.write(item[0] + "\n")
+				the_file.write(str(item[1]) + "\n")				
 			
-			print self.currentList
-			for item in self.currentList:
-				the_file.write(item)
-				
 			the_file.close()
 
 			
@@ -1724,3 +1768,4 @@ def start(screen):
 
 gui = GUI()
 main = Main()
+data = HandleData()

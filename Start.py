@@ -84,7 +84,13 @@ class Menu():
 		self.running = True
 		self.clock = pygame.time.Clock()
 		
+		self.highscoreFont = pygame.font.SysFont("Arial Black", 20)
 		self.font = pygame.font.SysFont("SKETCHFLOW PRINT", 30)
+		self.headerFont = pygame.font.SysFont("SKETCHFLOW PRINT", 40)
+		
+
+		self.highscoreHeaderText = self.headerFont.render("Highscore", True, (171,4,4))
+		self.mainHeaderText = self.headerFont.render("pyTetris", True, (171,4,4))
 		self.start = self.font.render("START", True, (0, 0, 0))
 		self.highscore = self.font.render("HIGHSORE", True, (0, 0, 0))
 		self.options = self.font.render("OPTIONS", True, (0, 0, 0))
@@ -93,6 +99,7 @@ class Menu():
 	def main(self):
 		while self.running:
 			self.screen.blit(self.background,(0,0))
+			self.screen.blit(self.mainHeaderText,(165,20))
 			for n in range(4):
 				if self.choice == n:
 					self.screen.blit(self.markedButton, (90,n * 110 + 140))
@@ -130,14 +137,44 @@ class Menu():
 						if self.choice == 1:
 							pass
 						if self.choice == 2:
-							loadData = Tetris.HandleData()
-							print loadData.readData()
+							self.displayHighscore()
 							
 						if self.choice == 3:
 							self.running = False
 		
 		pygame.quit()
+	
+	def displayHighscore(self):
+		name = ""
+		score = ""
+		data = Tetris.HandleData()
+		currentHighscoreList = data.readData()
+		pressedKey = False
+		print currentHighscoreList
+		while not pressedKey:
+			self.screen.fill((0,0,0))
+			self.screen.blit(self.background,(0,0))
+			self.screen.blit(self.highscoreHeaderText,(165,20))
 			
+			for i in range(20):
+				position = self.highscoreFont.render(str(i + 1).zfill(2) + ".", True,(0,0,0))
+				self.screen.blit(position, (120, ( 21 * i) + 110))
+
+			
+			for index, item in enumerate(currentHighscoreList):
+				name  = self.highscoreFont.render(item[0], True,(0,0,0))
+				score = self.highscoreFont.render(str(item[1]).zfill(6), True,(0,0,0))
+				self.screen.blit(name, (195,(21 * index) + 110))
+				self.screen.blit(score, (300,(21 * index) + 110))				
+			
+			pygame.display.flip()
+			self.clock.tick(20)
+			
+			for e in pygame.event.get():
+				if e.type == KEYDOWN:
+					pressedKey = True
+
+menu = Menu()					
 splash = Splash()
 splash.init()
 splash.main()
