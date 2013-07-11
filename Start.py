@@ -150,11 +150,14 @@ class Menu():
 		data = Tetris.HandleData()
 		currentHighscoreList = data.readData()
 		pressedKey = False
+		self.pressAnyKeyFont = pygame.font.SysFont("SKETCHFLOW PRINT", 30)
+		self.pressAnyKeyText = self.pressAnyKeyFont.render("Press any key to return.", True, (0,0,0))
 		print currentHighscoreList
 		while not pressedKey:
 			self.screen.fill((0,0,0))
 			self.screen.blit(self.background,(0,0))
 			self.screen.blit(self.highscoreHeaderText,(165,20))
+			self.screen.blit(self.pressAnyKeyText,(55,550))
 			
 			for i in range(20):
 				position = self.highscoreFont.render(str(i + 1).zfill(2) + ".", True,(0,0,0))
