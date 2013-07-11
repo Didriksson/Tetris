@@ -157,7 +157,7 @@ class Menu():
 			self.screen.fill((0,0,0))
 			self.screen.blit(self.background,(0,0))
 			self.screen.blit(self.highscoreHeaderText,(165,20))
-			self.screen.blit(self.pressAnyKeyText,(55,550))
+			self.screen.blit(self.pressAnyKeyText,(50,550))
 			
 			for i in range(20):
 				position = self.highscoreFont.render(str(i + 1).zfill(2) + ".", True,(0,0,0))

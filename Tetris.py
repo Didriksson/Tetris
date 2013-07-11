@@ -2314,9 +2314,7 @@ class Main:
 		self.speedDown = 750
 		pygame.time.set_timer(self.LINEDOWNEVENT, self.speedDown)
 		self.gameOver = False
-		self.MUSIC_ENDS = USEREVENT +2
 		
-		self.songlist = 1
 		
 		self.highscoreList = data.readData()
 		self.highscoreList.sort(key = itemgetter(1))
@@ -2325,9 +2323,8 @@ class Main:
 		
 		#http://home.swipnet.se/~w-22134/nmm/mitten.html
 		
-		pygame.mixer.music.set_endevent(self.MUSIC_ENDS)
-		pygame.mixer.music.load(os.path.join('data','stormeagle.mid'))
-		pygame.mixer.music.play(0)
+		pygame.mixer.music.load(os.path.join('data','Tetristheme.ogg'))
+		pygame.mixer.music.play(-1)
 
 		
 	#The main part of the program. The loop which will handle everything from updates to event-handling.
@@ -2345,19 +2342,6 @@ class Main:
 					if e.type == self.LINEDOWNEVENT:
 						gui.lineDown()
 						
-					if e.type == self.MUSIC_ENDS:
-						print "It's over!"
-						if self.songlist == 0:
-							print "First song loaded"
-							pygame.mixer.music.load(os.path.join('data','tetris_theme1.mid'))
-							pygame.mixer.music.play(0)
-							self.songlist = 1
-						elif self.songlist == 1:
-							print "Second song loaded"
-							pygame.mixer.music.load(os.path.join('data','tetris_theme2.mid'))
-							pygame.mixer.music.play(0)
-							self.songlist = 0
-				
 					if e.type == KEYUP:
 						if e.key == K_DOWN:
 							gui.piecePushedDown = False
@@ -2433,7 +2417,7 @@ class Main:
 				
 		return self.returnValue
 
-s
+
 class HandleData:
 
 
