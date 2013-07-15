@@ -10,9 +10,7 @@ This is a simple Tetris clone, made from scratch by me.
 """
 
 
-
-
-import pygame, random, os.path
+import pygame, random, os.path, HandleData_module
 from pygame.locals import *
 from Tkinter import *
 from operator import itemgetter
@@ -330,71 +328,75 @@ class GUI:
 			if(self.linesCleared >= ((self.level * 10) + 10)):
 				self.levelUp()
 
-				
-	#Handles rotations of the piece. Yet to be implemented.
+	
+	def rotateCheckAndMove(self, moveX1, moveY1, moveX2, moveY2, moveX3, moveY3, moveX4, moveY4):
+		
+			moveX = moveX1 + self.adjustMoveX
+			moveY = moveY1 + self.adjustMoveY
+			if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
+				moveX = moveX2 + self.adjustMoveX
+				moveY = moveY2 + self.adjustMoveY										
+				if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
+					moveX = moveX3 + self.adjustMoveX
+					moveY = moveY3	+ self.adjustMoveY			
+					if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
+						moveX = moveX4 + self.adjustMoveX
+						moveY = moveY4 + self.adjustMoveY
+						if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:
+							#Move first piece
+							moveX = moveX1 + self.adjustMoveX
+							moveY = moveY1 + self.adjustMoveY
+							if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
+								self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
+								self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
+								self.activePiece[0][0] = self.activePiece[0][0] + moveY
+								self.activePiece[0][1] = self.activePiece[0][1] + moveX
+							
+							#Move second piece ( Not moving as default)
+							moveX = moveX2 + self.adjustMoveX
+							moveY = moveY2 + self.adjustMoveY
+							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
+								self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
+								self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
+								self.activePiece[1][0] = self.activePiece[1][0] + moveY
+								self.activePiece[1][1] = self.activePiece[1][1] + moveX
+
+							#Move third piece
+							moveX = moveX3 + self.adjustMoveX
+							moveY = moveY3	+ self.adjustMoveY			
+							if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
+								self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
+								self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
+								self.activePiece[2][0] = self.activePiece[2][0] + moveY
+								self.activePiece[2][1] = self.activePiece[2][1] + moveX
+								
+							#Move fourth piece
+							moveX = moveX4 + self.adjustMoveX
+							moveY = moveY4 + self.adjustMoveY
+							if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
+								self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
+								self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
+								self.activePiece[3][0] = self.activePiece[3][0] + moveY
+								self.activePiece[3][1] = self.activePiece[3][1] + moveX				
+							allWentWell = True
+							return allWentWell
+		
+	
+	#Handles rotations of the piece.
 	def rotatePiece(self,rotateDirection):
 		self.adjustMoveY = 0 
 		self.adjustMoveX = 0
 		
 		#Check if line-piece.
 		if self.playArea[self.activePiece[0][0]][self.activePiece[0][1]] == self.LINEPIECE:
-				moveX = 0
-				moveY = 0
+
 				allWentWell = False
 				if self.currentPosition == "flat":
 					self.activePiece.sort()
 					if (self.activePiece[0][1]+1) < self.cols and not self.activePiece[0][0] <2:
-						moveX = 1 + self.adjustMoveX
-						moveY = 1 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 0 + self.adjustMoveX
-							moveY = 0 + self.adjustMoveY										
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = -1 + self.adjustMoveX
-								moveY = -1	+ self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = -2 + self.adjustMoveX
-									moveY = -2 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:
-										#Move first piece
-										moveX = 1 + self.adjustMoveX
-										moveY = 1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece ( Not moving as default)
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										#Move third piece
-										moveX = -1 + self.adjustMoveX
-										moveY = -1	+ self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece
-										moveX = -2 + self.adjustMoveX
-										moveY = -2 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "line"
-										return allWentWell
-					
+						allWentWell = self.rotateCheckAndMove(1,1,0,0,-1,-1,-2,-2)
+						self.currentPosition = "line"
+						return allWentWell
 					else:
 						allWentWell = False
 						return allWentWell
@@ -405,56 +407,9 @@ class GUI:
 					self.activePiece.sort()
 							
 					if (self.activePiece[0][1]-1) >= 0 and self.activePiece[0][1]+2 < self.cols:
-						moveX = 2 + self.adjustMoveX
-						moveY = 2 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 1 + self.adjustMoveX
-							moveY = 1 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = 0 + self.adjustMoveX
-								moveY = 0	+ self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = -1 + self.adjustMoveX
-									moveY = -1 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:			
-										#Move first piece
-										moveX = 2 + self.adjustMoveX
-										moveY = 2 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece ( Not moving as default)
-										moveX = 1 + self.adjustMoveX
-										moveY = 1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										#Move third piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0	+ self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece
-										moveX = -1 + self.adjustMoveX
-										moveY = -1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "flat"
-										return allWentWell
+						allWentWell = self.rotateCheckAndMove(2,2,1,1,0,0,-1,-1)
+						self.currentPosition = "flat"
+						return allWentWell
 					
 					else:
 						allWentWell = False
@@ -470,111 +425,17 @@ class GUI:
 
 					self.activePiece.sort()
 					self.activePiece.reverse()
-					moveX = 0 + self.adjustMoveX
-					moveY = 1 + self.adjustMoveY					
-					if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-						moveX = 0 + self.adjustMoveX
-						moveY = 0 + self.adjustMoveY										
-						if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = 1 + self.adjustMoveX
-								moveY = 1 + self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = -1 + self.adjustMoveX
-									moveY = 0 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:
-										
-										#Move first piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece ( Not moving as default)
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
+					allWentWell = self.rotateCheckAndMove(0,1,0,0,1,1,-1,0)
+					self.currentPosition = "right"
+					return allWentWell
 
-										
-										#Move third piece
-										moveX = 1 + self.adjustMoveX
-										moveY = 1 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece
-										moveX = -1 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "right"
-				
 				elif self.currentPosition == "right":
 					self.activePiece.sort()
 					if self.activePiece[0][1]-1 >= 0:
-						moveX = -1 + self.adjustMoveX
-						moveY = 1 + self.adjustMoveY					
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 0 + self.adjustMoveX
-							moveY = 0 + self.adjustMoveY					
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = -1 + self.adjustMoveX
-								moveY = 0 + self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = 0 + self.adjustMoveX
-									moveY = -1 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:
-										#Move first piece
-										moveX = -1 + self.adjustMoveX
-										moveY = 1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
 
-										#Move third piece
-										moveX = -1 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece (not moving per default)
-										moveX = 0 + self.adjustMoveX
-										moveY = -1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "down"
-										return allWentWell
+						allWentWell = self.rotateCheckAndMove(-1,1,0,0,-1,0,0,-1)
+						self.currentPosition = "down"
+						return allWentWell
 					
 					else:
 						allWentWell = False
@@ -585,56 +446,10 @@ class GUI:
 					self.activePiece.sort()
 
 					if (self.activePiece[0][1]) >= 0:
-						moveX = 0 + self.adjustMoveX
-						moveY = -1 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 0 + self.adjustMoveX
-							moveY = 0 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = -1 + self.adjustMoveX
-								moveY = -1 + self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = 1 + self.adjustMoveX
-									moveY = 0 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:
-										#Move first piece
-										moveX = 0 + self.adjustMoveX
-										moveY = -1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
 										
-										#Move second piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										#Move third piece
-										moveX = -1 + self.adjustMoveX
-										moveY = -1 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece (not moving per default)
-										moveX = 1 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "left"
-										return allWentWell
+						allWentWell = self.rotateCheckAndMove(0,-1,0,0,-1,-1,1,0)
+						self.currentPosition = "left"
+						return allWentWell
 					
 					else:
 						allWentWell = False
@@ -643,57 +458,11 @@ class GUI:
 				elif self.currentPosition == "left":
 					self.activePiece.sort()
 					if (self.activePiece[1][1]+1) <self.cols:
-						moveX = 0 + self.adjustMoveX
-						moveY = 1 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 1 + self.adjustMoveX
-							moveY = 1 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = 0 + self.adjustMoveX
-								moveY = 0 + self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = 1 + self.adjustMoveX
-									moveY = -2 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:
-										#Move first piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece
-										moveX = 1 + self.adjustMoveX
-										moveY = 1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										#Move third piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece (not moving per default)
-										moveX = 1 + self.adjustMoveX
-										moveY = -2 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "up"
-										return allWentWell
-					
+			
+						allWentWell = self.rotateCheckAndMove(0,1,1,1,0,0,1,-2)
+						self.currentPosition = "up"
+						return allWentWell
+			
 					else:
 						allWentWell = False
 						return allWentWell
@@ -708,112 +477,18 @@ class GUI:
 
 					self.activePiece.sort()
 					self.activePiece.reverse()
-					moveX = -1 + self.adjustMoveX
-					moveY = -1 + self.adjustMoveY					
-					if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-						moveX = 0 + self.adjustMoveX
-						moveY = 0 + self.adjustMoveY										
-						if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = 1 + self.adjustMoveX
-								moveY = 1 + self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = -1 + self.adjustMoveX
-									moveY = 0 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:
-										
-										#Move first piece
-										moveX = -1 + self.adjustMoveX
-										moveY = -1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece ( Not moving as default)
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										
-										#Move third piece
-										moveX = 1 + self.adjustMoveX
-										moveY = 1 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece
-										moveX = -2 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "left"
-				
+					allWentWell = self.rotateCheckAndMove(-1,-1,0,0,1,1,-2,0)
+					self.currentPosition = "left"
+					return allWentWell
+					
 				elif self.currentPosition == "left":
 					self.activePiece.sort()
-
+					print "Left"
 					if self.activePiece[0][1]-1 >= 0:
-						moveX = 0 + self.adjustMoveX
-						moveY = 1 + self.adjustMoveY					
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = -1 + self.adjustMoveX
-							moveY = 2 + self.adjustMoveY					
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = 0 + self.adjustMoveX
-								moveY = 0 + self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = 1 + self.adjustMoveX
-									moveY = -1 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:
-										#Move first piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece
-										moveX = -1 + self.adjustMoveX
-										moveY = 2 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										#Move third piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece (not moving per default)
-										moveX = 1 + self.adjustMoveX
-										moveY = -1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "down"
-										return allWentWell
+			
+						allWentWell = self.rotateCheckAndMove(0,1,-1,2,0,0,1,-1)
+						self.currentPosition = "down"
+						return allWentWell
 					
 					else:
 						allWentWell = False
@@ -821,57 +496,11 @@ class GUI:
 				
 				elif self.currentPosition == "down":
 					self.activePiece.sort()
+					print "Down"
 					if (self.activePiece[0][1]) >= 0:
-						moveX = 1 + self.adjustMoveX
-						moveY = 1 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 0 + self.adjustMoveX
-							moveY = 0 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = 2 + self.adjustMoveX
-								moveY = 0 + self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = -1 + self.adjustMoveX
-									moveY = -1 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:
-										#Move first piece
-										moveX = 1 + self.adjustMoveX
-										moveY = 1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										#Move third piece
-										moveX = -1 + self.adjustMoveX
-										moveY = -1 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece (not moving per default)
-										moveX = 2 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "right"
-										return allWentWell
+						allWentWell = self.rotateCheckAndMove(1,1,0,0,-1,-1,2,0)
+						self.currentPosition = "right"
+						return allWentWell
 					
 					else:
 						allWentWell = False
@@ -879,61 +508,16 @@ class GUI:
 
 				elif self.currentPosition == "right":
 					self.activePiece.sort()
+					print "Right"
 					if (self.activePiece[1][1]+1) <self.cols:
-						moveX = 1 + self.adjustMoveX
-						moveY = 0 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 0 + self.adjustMoveX
-							moveY = 0 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = -1 + self.adjustMoveX
-								moveY = -1 + self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = 0 + self.adjustMoveX
-									moveY = -1 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:
-										#Move first piece
-										moveX = 1 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										#Move third piece
-										moveX = -1 + self.adjustMoveX
-										moveY = -1 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece (not moving per default)
-										moveX = 0 + self.adjustMoveX
-										moveY = -1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "up"
-										return allWentWell
+						allWentWell = self.rotateCheckAndMove(1,0,0,0,-1,-1,0,-1)
+						self.currentPosition = "up"
+						return allWentWell
 					
 					else:
 						allWentWell = False
 						return allWentWell
+						
 		#Check if reverse-L
 		if self.playArea[self.activePiece[0][0]][self.activePiece[0][1]] == self.REVERSEL:
 			moveX = 0
@@ -945,57 +529,10 @@ class GUI:
 					self.activePiece.sort()
 					
 					if (self.activePiece[1][1]+2) < self.cols:
-						moveX = 1 + self.adjustMoveX
-						moveY = 0 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 1 + self.adjustMoveX
-							moveY = 1 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = 0 + self.adjustMoveX
-								moveY = 0	+ self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = 0 + self.adjustMoveX
-									moveY = -1 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:			
-										#Move first piece
-										moveX = 1 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece ( Not moving as default)
-										moveX = 1 + self.adjustMoveX
-										moveY = 1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										
-										#Move third piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece
-										moveX = 0 + self.adjustMoveX
-										moveY = -1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "right"
-										return allWentWell
+		
+						allWentWell = self.rotateCheckAndMove(1,0,1,1,0,0,0,-1)
+						self.currentPosition = "right"
+						return allWentWell
 					
 					else:
 						allWentWell = False
@@ -1005,56 +542,9 @@ class GUI:
 				if self.currentPosition == "right":
 					self.activePiece.sort()
 					if (self.activePiece[0][1]-1) >= 0:
-						moveX = -1 + self.adjustMoveX
-						moveY = 1 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 0 + self.adjustMoveX
-							moveY = 1 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = 0 + self.adjustMoveX
-								moveY = 0	+ self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = 1 + self.adjustMoveX
-									moveY = 0 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:			
-										#Move first piece
-										moveX = -1 + self.adjustMoveX
-										moveY = 1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										#Move third piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece (not moving per default)
-										moveX = 1 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "down"
-										return allWentWell
+						allWentWell = self.rotateCheckAndMove(-1,1,0,1,0,0,1,0)
+						self.currentPosition = "down"
+						return allWentWell
 					
 					else:
 						allWentWell = False
@@ -1065,56 +555,9 @@ class GUI:
 					self.activePiece.sort()
 					
 					if (self.activePiece[0][1]) >= 0:
-						moveX = 1 + self.adjustMoveX
-						moveY = -1 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 0 + self.adjustMoveX
-							moveY = 0 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = -1 + self.adjustMoveX
-								moveY = 1	+ self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = -2 + self.adjustMoveX
-									moveY = 0 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:			
-										#Move first piece
-										moveX = 1 + self.adjustMoveX
-										moveY = -1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										#Move third piece
-										moveX = -1 + self.adjustMoveX
-										moveY = 1 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece (not moving per default)
-										moveX = -2 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "left"
-										return allWentWell
+						allWentWell = self.rotateCheckAndMove(1,-1,0,0,-1,1,-2,0)
+						self.currentPosition = "left"
+						return allWentWell
 					
 					else:
 						allWentWell = False
@@ -1123,57 +566,9 @@ class GUI:
 				if self.currentPosition == "left":
 					self.activePiece.sort()
 					if (self.activePiece[1][1]+1) <self.cols:
-						moveX = -1 + self.adjustMoveX
-						moveY = 1 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 0 + self.adjustMoveX
-							moveY = 0 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = 0 + self.adjustMoveX
-								moveY = -2	+ self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = 1 + self.adjustMoveX
-									moveY = -1 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:			
-								
-										#Move first piece
-										moveX = -1 + self.adjustMoveX
-										moveY = +1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										#Move third piece
-										moveX = 0 + self.adjustMoveX
-										moveY = -2 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece (not moving per default)
-										moveX = 1 + self.adjustMoveX
-										moveY = -1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "up"
-										return allWentWell
+						allWentWell = self.rotateCheckAndMove(-1,1,0,0,0,-2,1,-1)
+						self.currentPosition = "up"
+						return allWentWell
 					
 					else:
 						allWentWell = False
@@ -1184,57 +579,9 @@ class GUI:
 				if self.currentPosition == "up":
 					self.activePiece.sort()
 					if (self.activePiece[1][1]+2) < self.cols:
-						moveX = 1 + self.adjustMoveX
-						moveY = 0 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 0 + self.adjustMoveX
-							moveY = 1 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = 0 + self.adjustMoveX
-								moveY = 0	+ self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = -1 + self.adjustMoveX
-									moveY = 1 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:			
-										#Move first piece
-										moveX = 1 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece ( Not moving as default)
-										moveX = 0 + self.adjustMoveX
-										moveY = 1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										
-										#Move third piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece
-										moveX = -1 + self.adjustMoveX
-										moveY = 1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "left"
-										return allWentWell
+						allWentWell = self.rotateCheckAndMove(1,0,0,1,0,0,-1,1)
+						self.currentPosition = "left"
+						return allWentWell
 					
 					else:
 						allWentWell = False
@@ -1245,56 +592,9 @@ class GUI:
 					self.activePiece.sort()
 
 					if (self.activePiece[0][1]-1) >= 0:
-						moveX = -1 + self.adjustMoveX
-						moveY = 1 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 0 + self.adjustMoveX
-							moveY = 0 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = 2 + self.adjustMoveX
-								moveY = 0	+ self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = 1 + self.adjustMoveX
-									moveY = -1 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:			
-										#Move first piece
-										moveX = -1 + self.adjustMoveX
-										moveY = 1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										#Move third piece
-										moveX = 2 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece (not moving per default)
-										moveX = 1 + self.adjustMoveX
-										moveY = -1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "down"
-										return allWentWell
+						allWentWell = self.rotateCheckAndMove(-1,1,0,0,2,0,1,-1)
+						self.currentPosition = "down"
+						return allWentWell
 					
 					else:
 						allWentWell = False
@@ -1304,56 +604,9 @@ class GUI:
 				if self.currentPosition == "down":
 					self.activePiece.sort()
 					if (self.activePiece[0][1]) >= 0:
-						moveX = 1 + self.adjustMoveX
-						moveY = -1 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 0 + self.adjustMoveX
-							moveY = 0 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = 0 + self.adjustMoveX
-								moveY = -1	+ self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = -1 + self.adjustMoveX
-									moveY = 0 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:			
-										#Move first piece
-										moveX = 1 + self.adjustMoveX
-										moveY = -1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										#Move third piece
-										moveX = 0 + self.adjustMoveX
-										moveY = -1 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece (not moving per default)
-										moveX = -1 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "right"
-										return allWentWell
+						allWentWell = self.rotateCheckAndMove(1,-1,0,0,0,-1,-1,0)
+						self.currentPosition = "right"
+						return allWentWell
 					
 					else:
 						allWentWell = False
@@ -1364,57 +617,9 @@ class GUI:
 					print self.activePiece
 
 					if (self.activePiece[1][1]+1) <self.cols:
-						moveX = -1 + self.adjustMoveX
-						moveY = 0 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 0 + self.adjustMoveX
-							moveY = 1 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = 0 + self.adjustMoveX
-								moveY = 0	+ self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = -1 + self.adjustMoveX
-									moveY = -1 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:			
-								
-										#Move first piece
-										moveX = -1 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										#Move third piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece (not moving per default)
-										moveX = -1 + self.adjustMoveX
-										moveY = -1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "up"
-										return allWentWell
+						allWentWell = self.rotateCheckAndMove(-1,0,0,1,0,0,-1,-1)
+						self.currentPosition = "up"
+						return allWentWell
 					
 					else:
 						allWentWell = False
@@ -1428,57 +633,9 @@ class GUI:
 					self.activePiece.sort()
 						
 					if (self.activePiece[0][1]) < self.cols:
-						moveX = 2 + self.adjustMoveX
-						moveY = 0 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 0 + self.adjustMoveX
-							moveY = 0 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = 0 + self.adjustMoveX
-								moveY = 0	+ self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = 0 + self.adjustMoveX
-									moveY = -2 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:			
-										#Move first piece
-										moveX = 2 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece ( Not moving as default)
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										
-										#Move third piece ( Not moving as default)
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece
-										moveX = 0 + self.adjustMoveX
-										moveY = -2 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "standing"
-										return allWentWell
+						allWentWell = self.rotateCheckAndMove(2,0,0,0,0,0,0,-2)
+						self.currentPosition = "standing"
+						return allWentWell
 					
 					else:
 						allWentWell = False
@@ -1489,56 +646,9 @@ class GUI:
 					self.activePiece.sort()
 					
 					if (self.activePiece[0][1]-2) >= 0:
-						moveX = -2 + self.adjustMoveX
-						moveY = 1 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 0 + self.adjustMoveX
-							moveY = 0 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = 0 + self.adjustMoveX
-								moveY = 1 + self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = 0 + self.adjustMoveX
-									moveY = 0 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:			
-										#Move first piece
-										moveX = -2 + self.adjustMoveX
-										moveY = 1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										#Move third piece
-										moveX = 0 + self.adjustMoveX
-										moveY = +1 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece (not moving per default)
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "flat"
-										return allWentWell
+						allWentWell = self.rotateCheckAndMove(-2,1,0,0,0,1,0,0)
+						self.currentPosition = "flat"
+						return allWentWell
 					
 					else:
 						allWentWell = False
@@ -1552,57 +662,9 @@ class GUI:
 					self.activePiece.sort()
 		
 					if (self.activePiece[1][1]) < self.cols:
-						moveX = 0 + self.adjustMoveX
-						moveY = 0 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 0 + self.adjustMoveX
-							moveY = 2 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = 2 + self.adjustMoveX
-								moveY = 0 + self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = 0 + self.adjustMoveX
-									moveY = 0 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:
-										#Move first piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece ( Not moving as default)
-										moveX = 0 + self.adjustMoveX
-										moveY = 2 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										
-										#Move third piece
-										moveX = 2 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "standing"
-										return allWentWell
+						allWentWell = self.rotateCheckAndMove(0,0,0,2,2,0,0,0)
+						self.currentPosition = "standing"
+						return allWentWell
 					
 					else:
 						allWentWell = False
@@ -1613,54 +675,7 @@ class GUI:
 					self.activePiece.sort()
 					
 					if (self.activePiece[0][1]-1) >= 0:
-						moveX = 0 + self.adjustMoveX
-						moveY = 0 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 0 + self.adjustMoveX
-							moveY = 0 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = -2 + self.adjustMoveX
-								moveY = 0 + self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = 0 + self.adjustMoveX
-									moveY = -2 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:
-										#Move first piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										#Move third piece
-										moveX = -2 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece (not moving per default)
-										moveX = 0 + self.adjustMoveX
-										moveY = -2 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
+										allWentWell = self.rotateCheckAndMove(0,0,0,0,-2,0,0,-2)
 										self.currentPosition = "flat"
 										return allWentWell
 					
@@ -1676,57 +691,9 @@ class GUI:
 				if self.currentPosition == "up":
 					self.activePiece.sort()
 					if (self.activePiece[1][1]) < self.cols and (self.activePiece[1][0] +1) < len(self.playArea):
-						moveX = 0 + self.adjustMoveX
-						moveY = 0 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 1 + self.adjustMoveX
-							moveY = 1 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = 0 + self.adjustMoveX
-								moveY = 0 + self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = 0 + self.adjustMoveX
-									moveY = 0 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:
-										#Move first piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece ( Not moving as default)
-										moveX = 1 + self.adjustMoveX
-										moveY = 1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										
-										#Move third piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "right"
-										return allWentWell
+						allWentWell = self.rotateCheckAndMove(0,0,1,1,0,0,0,0)
+						self.currentPosition = "right"
+						return allWentWell
 					
 					else:
 						allWentWell = False
@@ -1735,56 +702,9 @@ class GUI:
 				if self.currentPosition == "right":
 					self.activePiece.sort()
 					if (self.activePiece[0][1]-1) >= 0:
-						moveX = -1 + self.adjustMoveX
-						moveY = 1 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 0 + self.adjustMoveX
-							moveY = 0 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = 0 + self.adjustMoveX
-								moveY = 0 + self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = 0 + self.adjustMoveX
-									moveY = 0 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:
-										#Move first piece
-										moveX = -1 + self.adjustMoveX
-										moveY = 1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										#Move third piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece (not moving per default)
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "down"
-										return allWentWell
+						allWentWell = self.rotateCheckAndMove(-1,1,0,0,0,0,0,0)
+						self.currentPosition = "down"
+						return allWentWell
 					
 					else:
 						allWentWell = False
@@ -1795,56 +715,9 @@ class GUI:
 					self.activePiece.sort()
 					
 					if (self.activePiece[0][1]) >= 0:
-						moveX = 0 + self.adjustMoveX
-						moveY = 0 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 0 + self.adjustMoveX
-							moveY = 0 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = -1 + self.adjustMoveX
-								moveY = -1 + self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = 0 + self.adjustMoveX
-									moveY = 0 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:
-										#Move first piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										#Move third piece
-										moveX = -1 + self.adjustMoveX
-										moveY = -1 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece (not moving per default)
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "left"
-										return allWentWell
+						allWentWell = self.rotateCheckAndMove(0,0,0,0,-1,-1,0,0)
+						self.currentPosition = "left"
+						return allWentWell
 					
 					else:
 						allWentWell = False
@@ -1853,56 +726,9 @@ class GUI:
 				if self.currentPosition == "left":
 					self.activePiece.sort()
 					if (self.activePiece[3][1]+1) <self.cols:
-						moveX = 0 + self.adjustMoveX
-						moveY = 0 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 0 + self.adjustMoveX
-							moveY = 0 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = 0 + self.adjustMoveX
-								moveY = 0 + self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = 1 + self.adjustMoveX
-									moveY = -1 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:		
-										#Move first piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										#Move third piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece (not moving per default)
-										moveX = 1 + self.adjustMoveX
-										moveY = -1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "up"
-										return allWentWell
+						allWentWell = self.rotateCheckAndMove(0,0,0,0,0,0,1,-1)
+						self.currentPosition = "up"
+						return allWentWell
 					
 					else:
 						allWentWell = False
@@ -1916,57 +742,9 @@ class GUI:
 				if self.currentPosition == "up":
 					self.activePiece.sort()
 					if (self.activePiece[1][1]) < self.cols and (self.activePiece[1][0] +1) < len(self.playArea):
-						moveX = 0 + self.adjustMoveX
-						moveY = 0 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 0 + self.adjustMoveX
-							moveY = 0 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = 0 + self.adjustMoveX
-								moveY = 0 + self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = -1 + self.adjustMoveX
-									moveY = 1 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:
-										#Move first piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece ( Not moving as default)
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										
-										#Move third piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece
-										moveX = -1 + self.adjustMoveX
-										moveY = 1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "left"
-										return allWentWell
+						allWentWell = self.rotateCheckAndMove(0,0,0,0,0,0,-1,1)
+						self.currentPosition = "left"
+						return allWentWell
 					
 					else:
 						allWentWell = False
@@ -1975,56 +753,9 @@ class GUI:
 				if self.currentPosition == "left":
 					self.activePiece.sort()
 					if (self.activePiece[0][1]-1) >= 0:
-						moveX = 1 + self.adjustMoveX
-						moveY = 1 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 0 + self.adjustMoveX
-							moveY = 0 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = 0 + self.adjustMoveX
-								moveY = 0 + self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = 0 + self.adjustMoveX
-									moveY = 0 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:
-										#Move first piece
-										moveX = 1 + self.adjustMoveX
-										moveY = 1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										#Move third piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece (not moving per default)
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "down"
-										return allWentWell
+						allWentWell = self.rotateCheckAndMove(1,1,0,0,0,0,0,0)
+						self.currentPosition = "down"
+						return allWentWell
 					
 					else:
 						allWentWell = False
@@ -2034,56 +765,9 @@ class GUI:
 				if self.currentPosition == "down":
 					self.activePiece.sort()
 					if (self.activePiece[0][1]) >= 0:
-						moveX = 1 + self.adjustMoveX
-						moveY = -1 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 0 + self.adjustMoveX
-							moveY = 0 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = 0 + self.adjustMoveX
-								moveY = 0 + self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = 0 + self.adjustMoveX
-									moveY = 0 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:
-										#Move first piece
-										moveX = 1 + self.adjustMoveX
-										moveY = -1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										#Move third piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece (not moving per default)
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "right"
-										return allWentWell
+						allWentWell = self.rotateCheckAndMove(1,-1,0,0,0,0,0,0)
+						self.currentPosition = "right"
+						return allWentWell
 					
 					else:
 						allWentWell = False
@@ -2092,56 +776,9 @@ class GUI:
 				if self.currentPosition == "right":
 					self.activePiece.sort()
 					if (self.activePiece[3][1]+1) <self.cols:
-						moveX = 0 + self.adjustMoveX
-						moveY = 0 + self.adjustMoveY
-						if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY or [(self.activePiece[0][0] + moveY),(self.activePiece[0][1] +moveX)] in self.activePiece:
-							moveX = 0 + self.adjustMoveX
-							moveY = 0 + self.adjustMoveY
-							if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY or [(self.activePiece[1][0] + moveY),(self.activePiece[1][1] +moveX)] in self.activePiece:
-								moveX = 0 + self.adjustMoveX
-								moveY = 0 + self.adjustMoveY			
-								if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY or [(self.activePiece[2][0] + moveY),(self.activePiece[2][1] +moveX)] in self.activePiece:
-									moveX = -1 + self.adjustMoveX
-									moveY = -1 + self.adjustMoveY
-									if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY or [(self.activePiece[3][0] + moveY),(self.activePiece[3][1] +moveX)] in self.activePiece:		
-										#Move first piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[0][0]) + moveY][(self.activePiece[0][1]) +moveX] = self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])]
-											self.playArea[(self.activePiece[0][0])][(self.activePiece[0][1])] = self.EMPTY
-											self.activePiece[0][0] = self.activePiece[0][0] + moveY
-											self.activePiece[0][1] = self.activePiece[0][1] + moveX
-										
-										#Move second piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY
-										if self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[1][0]) + moveY][(self.activePiece[1][1]) +moveX] = self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])]
-											self.playArea[(self.activePiece[1][0])][(self.activePiece[1][1])] = self.EMPTY
-											self.activePiece[1][0] = self.activePiece[1][0] + moveY
-											self.activePiece[1][1] = self.activePiece[1][1] + moveX
-
-										#Move third piece
-										moveX = 0 + self.adjustMoveX
-										moveY = 0 + self.adjustMoveY			
-										if self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[2][0]) + moveY][(self.activePiece[2][1]) +moveX] = self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])]
-											self.playArea[(self.activePiece[2][0])][(self.activePiece[2][1])] = self.EMPTY
-											self.activePiece[2][0] = self.activePiece[2][0] + moveY
-											self.activePiece[2][1] = self.activePiece[2][1] + moveX
-											
-										#Move fourth piece (not moving per default)
-										moveX = -1 + self.adjustMoveX
-										moveY = -1 + self.adjustMoveY
-										if self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] == self.EMPTY:
-											self.playArea[(self.activePiece[3][0]) + moveY][(self.activePiece[3][1]) +moveX] = self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])]
-											self.playArea[(self.activePiece[3][0])][(self.activePiece[3][1])] = self.EMPTY
-											self.activePiece[3][0] = self.activePiece[3][0] + moveY
-											self.activePiece[3][1] = self.activePiece[3][1] + moveX				
-										allWentWell = True
-										self.currentPosition = "up"
-										return allWentWell
+						allWentWell = self.rotateCheckAndMove(0,0,0,0,0,0,-1,-1)
+						self.currentPosition = "up"
+						return allWentWell
 					
 					else:
 						allWentWell = False
@@ -2278,14 +915,17 @@ class GUI:
 													
 			main.clock.tick(40)
 			pygame.display.flip()
+		print main.highscoreList			
+
 			
 		main.highscoreList.append((self.playerName, self.currentScore))
 		if len(main.highscoreList) >= 19:
 			main.highscoreList.sort(key = itemgetter(1))
 			main.highscoreList.reverse()
 			main.highscoreList.pop()
-			
-		data.writeData()
+				
+		if main.highscoreList:
+			data.writeData(main.highscoreList)
 			
 	def playAgainMenu(self):
 		self.screen.blit(self.playAgainMenuImage, (70,200))
@@ -2417,60 +1057,14 @@ class Main:
 				
 		return self.returnValue
 
-
-class HandleData:
-
-
-	def readData(self):
-		self.highscoreList = []
-		self.newPlayer = True
-		try:
-			the_file = open("data.txt", "r")
-		except(IOError), e:
-			print "Nu gick något fel!", e
-			raw_input("Tryck på valfri tangent för att avsluta.")
-			sys.exit()
-		else:
-
-			for line in the_file:
-				if self.newPlayer:
-					self.player = line
-					self.player = self.player.replace("\n", "")
-					self.newPlayer = False
-				elif not self.newPlayer:
-					self.score = line
-					self.score = self.score.replace("\n", "")
-					self.newPlayer = True
-					self.highscoreList.append((self.player, int(self.score)))
-
-			the_file.close()
-		return self.highscoreList
-
-	def writeData(self):
 		
-		try:
-			the_file = open("data.txt", "w")
-		
-		except(IOError), e:
-			print "Nu gick något fel!", e
-			raw_input("Tryck på valfri tangent för att avsluta.")
-			sys.exit()
-		
-		else:
-			for item in main.highscoreList:
-				the_file.write(item[0] + "\n")
-				the_file.write(str(item[1]) + "\n")				
-			
-			the_file.close()
-
-			
 def start(screen):
-	gui.init(screen)
 	main.init()
+	gui.init(screen)
 	shouldQuit = main.loop()
 	return shouldQuit
 	 
 
 gui = GUI()
 main = Main()
-data = HandleData()
+data = HandleData_module.HandleData()
