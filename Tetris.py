@@ -36,6 +36,13 @@ class GUI:
 		
 		self.blockEmpty = True
 		
+		self.fadeToBlack = pygame.Surface((self.screen.get_width(), self.screen.get_height()))
+		self.fadeToBlack.convert()
+		self.fadeToBlack.fill((0,0,0))
+		self.fadeToBlack.set_alpha(100)
+
+		
+		
 		self.EMPTY = "EMPTY"
 		self.REVERSEL = pygame.image.load(os.path.join('data','reverseL24.png'))
 		self.LPIECE = pygame.image.load(os.path.join('data','Lblock24.png'))
@@ -62,6 +69,7 @@ class GUI:
 		
 		self.highscorePopUpImage = pygame.image.load(os.path.join('data', 'highscorePopUp.png'))
 		
+		
 		self.level = 0
 		
 		
@@ -75,14 +83,18 @@ class GUI:
 		self.enterNameFont = pygame.font.SysFont("Arial Black", 15)
 		
 		
+
 		self.gameOverImage = self.gameOverFont.render("GAME OVER", True, (255, 0, 0))
+		self.gamePausedText = self.gameOverFont.render("PAUSED", True, (255, 0, 0))
 		self.scoreText = self.scoreTextFont.render("SCORE: ", True, (0,255,0))
 		self.linesText = self.levelFont.render("LINES: ", True, (0,255,0))
 		self.levelText = self.levelFont.render("LEVEL: ", True, (0,255,0))
 		self.playAgainTextYes = self.playAgainMenuFont.render("YES", True, (255,255,255))
 		self.playAgainTextNo = self.playAgainMenuFont.render("NO", True, (255, 255, 255))
-
-
+		self.playAgainText = self.playAgainMenuFont.render("Do you want to play again?", True, (255,255,255))
+		self.confirmExitText = self.playAgainMenuFont.render("Do you really want to quit?", True, (255,255,255))
+		
+		
 		self.playerName = ""
 		self.currentPosition = ""
 		self.activePiece = []
@@ -929,6 +941,7 @@ class GUI:
 			
 	def playAgainMenu(self):
 		self.screen.blit(self.playAgainMenuImage, (70,200))
+		self.screen.blit(self.playAgainText, (80,225))
 		if self.playAgainMarked:
 			self.screen.blit(self.playAgainMenuButton, (105,260))
 			self.screen.blit(self.playAgainMenuButtonMarked, (225,260))
@@ -951,10 +964,17 @@ class Main:
 		self.running = True
 		self.clock = pygame.time.Clock()
 		self.LINEDOWNEVENT = USEREVENT +1
+		self.MOVEXEVENT = USEREVENT +2
 		self.speedDown = 750
 		pygame.time.set_timer(self.LINEDOWNEVENT, self.speedDown)
-		self.gameOver = False
+		pygame.time.set_timer(self.MOVEXEVENT, 150)
 		
+
+		self.gameOver = False
+		self.paused = False
+		self.moveRight = False
+		self.moveLeft = False
+		self.exitMenu = False
 		
 		self.highscoreList = data.readData()
 		self.highscoreList.sort(key = itemgetter(1))
@@ -973,55 +993,133 @@ class Main:
 		self.returnValue = ""	
 		while self.running:
 			if not self.gameOver:
-				for e in pygame.event.get():
-				
-					if e.type == QUIT:
-						self.running = False
-						self.returnValue = "QUIT"
+				if not self.paused and not self.exitMenu:
+					for e in pygame.event.get():
 					
-					if e.type == self.LINEDOWNEVENT:
-						gui.lineDown()
+						if e.type == QUIT:
+							self.running = False
+							self.returnValue = "QUIT"
 						
-					if e.type == KEYUP:
-						if e.key == K_DOWN:
-							gui.piecePushedDown = False
-				
-					if e.type == KEYDOWN:
-						if e.key == K_UP:
-							gui.rotatePiece("RIGHT")
-						if e.key == K_LEFT:
-							gui.lineLeft()
-						if e.key == K_RIGHT:
-							gui.lineRight()
-						if e.key == K_x:
-							gui.rotatePiece("RIGHT")
-						if e.key == K_z:
-							gui.rotatePiece("LEFT")
-						if e.key == K_SPACE:
-							gui.instantDown()
-				keys = pygame.key.get_pressed()
-				if keys[pygame.K_DOWN]:
-					gui.piecePushedDown = True
-					gui.lineDown()
-					gui.piecePushedDown = False
-				
-				if keys[pygame.K_LEFT]:
-					pass
+						if e.type == self.LINEDOWNEVENT:
+							gui.lineDown()
+							
+						if e.type == self.MOVEXEVENT:
+							if self.moveRight:
+								gui.lineRight()
+							if self.moveLeft:
+								gui.lineLeft()
+								
+
+							
+						if e.type == KEYUP:
+							if e.key == K_DOWN:
+								gui.piecePushedDown = False
 					
-				if keys[pygame.K_RIGHT]:
-					pass
-				
-				
-				
-				if self.gameOver:
-					gui.screen.blit(gui.gameOverImage, (70,60))
-				
+						if e.type == KEYDOWN:
+							if e.key == K_UP:
+								gui.rotatePiece("RIGHT")
+							if e.key == K_LEFT:
+								gui.lineLeft()
+							if e.key == K_RIGHT:
+								gui.lineRight()
+							if e.key == K_x:
+								gui.rotatePiece("RIGHT")
+							if e.key == K_z:
+								gui.rotatePiece("LEFT")
+							if e.key == K_SPACE:
+								gui.instantDown()
+							if e.key == K_ESCAPE:
+								self.exitMenu = True
+							if e.key == K_p:
+								self.paused = True
+								
+					keys = pygame.key.get_pressed()
+					if keys[pygame.K_DOWN]:
+						gui.piecePushedDown = True
+						gui.lineDown()
+						gui.piecePushedDown = False
+					
+					if keys[pygame.K_LEFT]:
+						self.moveLeft = True
+						
+					else:
+						self.moveLeft = False
+						
+					if keys[pygame.K_RIGHT]:
+						self.moveRight = True
+					else:
+						self.moveRight = False
+					if self.gameOver:
+						gui.screen.blit(gui.fadeToBlack,(0,0))
+						gui.screen.blit(gui.gameOverImage, (70,60))
+					
+					else:
+						gui.reDraw()
+
+					self.clock.tick(40)
+					pygame.display.flip()
 				else:
-					gui.reDraw()
+					gui.screen.blit(gui.fadeToBlack,(0,0))
+					if self.paused:
+						gui.screen.blit(gui.gamePausedText,(140,150))
+						while self.paused:
+							self.clock.tick(40)
+							pygame.display.flip()
 
-				self.clock.tick(40)
-				pygame.display.flip()
+							for e in pygame.event.get():
+							
+								if e.type == QUIT:
+									self.running = False
+									self.returnValue = "QUIT"
+									self.paused = False
+								if e.type == KEYDOWN:
+									if e.key == K_ESCAPE:
+										self.paused = False
+									if e.key == K_p:
+										self.paused = False
+										
+										
+					if self.exitMenu:
+						resume = True
+						while self.exitMenu:
+							gui.screen.blit(gui.playAgainMenuImage, (70,200))
+							gui.screen.blit(gui.confirmExitText, (80,225))
+							if resume:
+								gui.screen.blit(gui.playAgainMenuButton, (105,260))
+								gui.screen.blit(gui.playAgainMenuButtonMarked, (225,260))
+								gui.screen.blit(gui.playAgainTextYes, ( 135, 263))
+								gui.screen.blit(gui.playAgainTextNo, ( 263, 263))	
+							else:
+								gui.screen.blit(gui.playAgainMenuButtonMarked, (105,260))
+								gui.screen.blit(gui.playAgainMenuButton, (225,260))
+								gui.screen.blit(gui.playAgainTextYes, ( 135, 263))
+								gui.screen.blit(gui.playAgainTextNo, ( 263, 263))	
 
+							self.clock.tick(40)
+							pygame.display.flip()
+
+							for e in pygame.event.get():
+							
+								if e.type == QUIT:
+									self.running = False
+									self.returnValue = "QUIT"
+									self.exitMenu = False
+								if e.type == KEYDOWN:
+									if e.key == K_ESCAPE:
+										self.exitMenu = False
+
+									if e.key == K_LEFT:
+										resume = False
+									if e.key == K_RIGHT:
+										resume = True
+									if e.key == K_RETURN:
+										if resume:
+											self.exitMenu = False
+										else:
+											self.exitMenu = False
+											self.running = False
+
+										
 			else:
 				pygame.mixer.music.stop()
 				if len(self.highscoreList) <20:

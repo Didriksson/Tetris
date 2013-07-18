@@ -79,7 +79,7 @@ class Menu():
 						if self.choice == 1:
 							pass
 						if self.choice == 2:
-							self.displayHighscore()
+							self.running = self.displayHighscore()
 							
 						if self.choice == 3:
 							self.running = False
@@ -91,6 +91,9 @@ class Menu():
 		score = ""
 		data = HandleData_module.HandleData()
 		currentHighscoreList = data.readData()
+		currentHighscoreList.sort(key = itemgetter(1))
+		currentHighscoreList.reverse()
+		
 		pressedKey = False
 		self.pressAnyKeyFont = pygame.font.SysFont("SKETCHFLOW PRINT", 30)
 		self.pressAnyKeyText = self.pressAnyKeyFont.render("Press any key to return.", True, (0,0,0))
@@ -118,3 +121,7 @@ class Menu():
 			for e in pygame.event.get():
 				if e.type == KEYDOWN:
 					pressedKey = True
+				if e.type == QUIT:
+					return False
+					
+		return True
