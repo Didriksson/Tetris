@@ -143,8 +143,6 @@ class GUI:
 		self.linesScore = self.scoreFont.render(str(self.linesCleared).rjust(3,"0"), True, (0,255,0))
 		self.screen.blit(self.linesScore, (378,90))
 		self.screen.blit(self.linesText, ( 294, 98))
-
-
 	
 	#Just as the name states this will take of redrawing the board.	
 	def reDraw(self):
@@ -161,7 +159,6 @@ class GUI:
 		self.piecesList()
 	
 		pygame.display.flip()
-
 
 	#Adds a piece to the board. Will receive a call from the "new piece" function in order to know which piece to add.	
 	def addPiece(self):
@@ -236,7 +233,6 @@ class GUI:
 			self.playArea[0][4] = self.TPIECE
 			self.activePiece = [[1,3], [1,4], [1,5], [0,4]]
 			self.currentPosition = "up"
-
 		
 	#Takes care of moving the board down one line, this can be called either when the user presses the down key, or as the piece is falling down.
 	def lineDown(self):
@@ -287,7 +283,6 @@ class GUI:
 				self.addPiece()
 				self.instantPossible = False
 				return self.instantPossible
-
 	
 	#Checks for full lines on the board. As soon as it finds a full line, it will pop them and replace with an empty line at the top.
 	def checkForFullLine(self):
@@ -339,8 +334,7 @@ class GUI:
 
 			if(self.linesCleared >= ((self.level * 10) + 10)):
 				self.levelUp()
-
-	
+				
 	def rotateCheckAndMove(self, moveX1, moveY1, moveX2, moveY2, moveX3, moveY3, moveX4, moveY4):
 		
 			moveX = moveX1 + self.adjustMoveX
@@ -392,7 +386,6 @@ class GUI:
 								self.activePiece[3][1] = self.activePiece[3][1] + moveX				
 							allWentWell = True
 							return allWentWell
-		
 	
 	#Handles rotations of the piece.
 	def rotatePiece(self,rotateDirection):
@@ -795,8 +788,7 @@ class GUI:
 					else:
 						allWentWell = False
 						return allWentWell
-		
-		
+
 	#Is invoked whenever the user presses the left-key on the keyboard. This will take care of, you guessed it, moving the piece to the left.	
 	def lineLeft(self):
 		emptyBlockLeft = True
@@ -890,7 +882,6 @@ class GUI:
 		elif randomedPiece == 6:
 			self.nextPieces.append(self.TPIECEMINI)
 			
-			
 	def levelUp(self):
 		self.level = self.level + 1
 		main.speedDown = int((main.speedDown * 0.85)) 
@@ -906,7 +897,6 @@ class GUI:
 	def highscorePopUpWindow(self):
 		enteredName = False
 		tempString = ""
-
 		
 		while not enteredName:
 			self.screen.blit(self.highscorePopUpImage, (70,200))
@@ -967,7 +957,7 @@ class Main:
 		self.MOVEXEVENT = USEREVENT +2
 		self.speedDown = 750
 		pygame.time.set_timer(self.LINEDOWNEVENT, self.speedDown)
-		pygame.time.set_timer(self.MOVEXEVENT, 150)
+		pygame.time.set_timer(self.MOVEXEVENT, 240)
 		
 
 		self.gameOver = False
@@ -975,6 +965,7 @@ class Main:
 		self.moveRight = False
 		self.moveLeft = False
 		self.exitMenu = False
+		self.firstMoveX = True
 		
 		self.highscoreList = data.readData()
 		self.highscoreList.sort(key = itemgetter(1))
@@ -995,21 +986,26 @@ class Main:
 			if not self.gameOver:
 				if not self.paused and not self.exitMenu:
 					for e in pygame.event.get():
-					
+
 						if e.type == QUIT:
-							self.running = False
-							self.returnValue = "QUIT"
+								self.running = False
+								self.returnValue = "QUIT"
 						
 						if e.type == self.LINEDOWNEVENT:
 							gui.lineDown()
 							
 						if e.type == self.MOVEXEVENT:
 							if self.moveRight:
-								gui.lineRight()
-							if self.moveLeft:
-								gui.lineLeft()
-								
-
+								if 	not self.firstMoveX:
+									gui.lineRight()
+								else:
+									self.firstMoveX = False
+									
+							elif self.moveLeft:
+								if 	not self.firstMoveX:
+									gui.lineLeft()
+								else:
+									self.firstMoveX = False
 							
 						if e.type == KEYUP:
 							if e.key == K_DOWN:
@@ -1020,8 +1016,11 @@ class Main:
 								gui.rotatePiece("RIGHT")
 							if e.key == K_LEFT:
 								gui.lineLeft()
+								self.firstMoveX = True
 							if e.key == K_RIGHT:
 								gui.lineRight()
+								self.firstMoveX = True
+								
 							if e.key == K_x:
 								gui.rotatePiece("RIGHT")
 							if e.key == K_z:
@@ -1038,13 +1037,13 @@ class Main:
 						gui.piecePushedDown = True
 						gui.lineDown()
 						gui.piecePushedDown = False
-					
+
 					if keys[pygame.K_LEFT]:
 						self.moveLeft = True
-						
+
 					else:
 						self.moveLeft = False
-						
+
 					if keys[pygame.K_RIGHT]:
 						self.moveRight = True
 					else:
@@ -1052,12 +1051,13 @@ class Main:
 					if self.gameOver:
 						gui.screen.blit(gui.fadeToBlack,(0,0))
 						gui.screen.blit(gui.gameOverImage, (70,60))
-					
+
 					else:
-						gui.reDraw()
+						gui.reDraw()					
 
 					self.clock.tick(40)
 					pygame.display.flip()
+					
 				else:
 					gui.screen.blit(gui.fadeToBlack,(0,0))
 					if self.paused:
