@@ -488,7 +488,6 @@ class GUI:
 					
 				elif self.currentPosition == "left":
 					self.activePiece.sort()
-					print "Left"
 					if self.activePiece[0][1]-1 >= 0:
 			
 						allWentWell = self.rotateCheckAndMove(0,1,-1,2,0,0,1,-1)
@@ -501,7 +500,6 @@ class GUI:
 				
 				elif self.currentPosition == "down":
 					self.activePiece.sort()
-					print "Down"
 					if (self.activePiece[0][1]) >= 0:
 						allWentWell = self.rotateCheckAndMove(1,1,0,0,-1,-1,2,0)
 						self.currentPosition = "right"
@@ -513,7 +511,6 @@ class GUI:
 
 				elif self.currentPosition == "right":
 					self.activePiece.sort()
-					print "Right"
 					if (self.activePiece[1][1]+1) <self.cols:
 						allWentWell = self.rotateCheckAndMove(1,0,0,0,-1,-1,0,-1)
 						self.currentPosition = "up"
@@ -619,7 +616,6 @@ class GUI:
 
 				if self.currentPosition == "right":
 					self.activePiece.sort()
-					print self.activePiece
 
 					if (self.activePiece[1][1]+1) <self.cols:
 						allWentWell = self.rotateCheckAndMove(-1,0,0,1,0,0,-1,-1)
@@ -917,7 +913,6 @@ class GUI:
 													
 			main.clock.tick(40)
 			pygame.display.flip()
-		print main.highscoreList			
 
 			
 		main.highscoreList.append((self.playerName, self.currentScore))
@@ -970,7 +965,6 @@ class Main:
 		self.highscoreList = data.readData()
 		self.highscoreList.sort(key = itemgetter(1))
 		self.highscoreList.reverse()
-		print self.highscoreList
 		
 		#http://home.swipnet.se/~w-22134/nmm/mitten.html
 		
@@ -1029,8 +1023,10 @@ class Main:
 								gui.instantDown()
 							if e.key == K_ESCAPE:
 								self.exitMenu = True
+								pygame.mixer.music.pause()
 							if e.key == K_p:
 								self.paused = True
+								pygame.mixer.music.pause()
 								
 					keys = pygame.key.get_pressed()
 					if keys[pygame.K_DOWN]:
@@ -1072,10 +1068,13 @@ class Main:
 									self.running = False
 									self.returnValue = "QUIT"
 									self.paused = False
+									pygame.mixer.music.unpause()
 								if e.type == KEYDOWN:
 									if e.key == K_ESCAPE:
 										self.paused = False
+										pygame.mixer.music.unpause()
 									if e.key == K_p:
+										pygame.mixer.music.unpause()
 										self.paused = False
 										
 										
@@ -1107,6 +1106,7 @@ class Main:
 								if e.type == KEYDOWN:
 									if e.key == K_ESCAPE:
 										self.exitMenu = False
+										pygame.mixer.music.unpause()
 
 									if e.key == K_LEFT:
 										resume = False
@@ -1115,9 +1115,11 @@ class Main:
 									if e.key == K_RETURN:
 										if resume:
 											self.exitMenu = False
+											pygame.mixer.music.unpause()
 										else:
 											self.exitMenu = False
 											self.running = False
+											pygame.mixer.music.stop()
 
 										
 			else:

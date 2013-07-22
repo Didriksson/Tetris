@@ -26,7 +26,7 @@ class Splash():
 		self.clock = pygame.time.Clock()
 		self.background = self.background.convert()
 		
-		self.splashImage = pygame.image.load("data\\splash.png")
+		self.splashImage = pygame.image.load(os.path.join('data','splash.png'))
 		self.splashImage = self.splashImage.convert()
 			
 

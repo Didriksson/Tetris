@@ -97,7 +97,6 @@ class Menu():
 		pressedKey = False
 		self.pressAnyKeyFont = pygame.font.SysFont("SKETCHFLOW PRINT", 30)
 		self.pressAnyKeyText = self.pressAnyKeyFont.render("Press any key to return.", True, (0,0,0))
-		print currentHighscoreList
 		while not pressedKey:
 			self.screen.fill((0,0,0))
 			self.screen.blit(self.background,(0,0))
