@@ -8,16 +8,45 @@ from operator import itemgetter
 
 class HandleData:
 
+	def readOptions(self):
+		options = []
+		try:
+			the_file = open("options.txt", "r")
+		except(IOError), e:
+			print "Something went wrong! Data file not found.", e
 
+		else:
+			for line in the_file:
+				line = line.replace("\n", "")
+				if line == "True":
+					options.append(True)
+				elif line == "False":
+					options.append(False)
+			return options
+
+	def writeOptions(self, listToPrint):
+		try:
+			the_file = open("options.txt", "w")
+		
+		except(IOError), e:
+			print "Nu gick något fel!", e
+			raw_input("Tryck på valfri tangent för att avsluta.")
+			sys.exit()
+		
+		else:
+			for item in listToPrint:
+				the_file.write(str(item) + "\n")
+			
+			the_file.close()
+			
 	def readData(self):
 		self.highscoreList = []
 		self.newPlayer = True
 		try:
 			the_file = open("data.txt", "r")
 		except(IOError), e:
-			print "Nu gick något fel!", e
-			raw_input("Tryck på valfri tangent för att avsluta.")
-			sys.exit()
+			print "Something went wrong! Data file not found.", e
+
 		else:
 
 			for line in the_file:

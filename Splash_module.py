@@ -37,7 +37,7 @@ class Splash():
 				self.splashImage.set_alpha(self.count)
 				self.screen.blit(self.splashImage,(50,150))
 				pygame.display.flip()
-				self.count = self.count - 1
+				self.count = self.count - 3
 				if self.count <0:
 					self.fadeIn = False
 					self.running = False
@@ -49,7 +49,7 @@ class Splash():
 				self.splashImage.set_alpha(self.count)
 				self.screen.blit(self.splashImage,(50,150))
 				pygame.display.flip()
-				self.count = self.count + 1
+				self.count = self.count + 3
 				if self.count > 254:
 					self.fadeIn = False
 					pygame.time.delay(1000)
@@ -58,7 +58,7 @@ class Splash():
 	def main(self):
 		while self.running:
 			self.fade()
-			self.clock.tick(30)
+			self.clock.tick(20)
 			for e in pygame.event.get():
 				if e.type == QUIT:
 					self.running = False

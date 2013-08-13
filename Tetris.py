@@ -18,15 +18,18 @@ from operator import itemgetter
 #The GUI class responsible for most of the program. Reason for that is because the GUI is such a central part of a program like Tetris.
 class GUI:
 	#A function which will initiate the class. I.e. set up windows, initiate attributes etc.
-	def init(self, sentScreen):
+	def init(self, sentScreen, grid, soundOption):
 		pygame.init()
 		
+		self.sound = soundOption
 		self.screen = sentScreen
 		self.screen.fill((0,0,0))
+		
 		
 		self.fromInstant = False
 		
 		self.nextPieces = []
+		
 		#Sound effects mainly generated from http://www.bfxr.net/
 		self.tetrisSound = pygame.mixer.Sound(os.path.join('data','tetrisFX.wav'))
 		self.lineSound = pygame.mixer.Sound(os.path.join('data','lineFX.wav'))
@@ -42,15 +45,26 @@ class GUI:
 		self.fadeToBlack.set_alpha(100)
 
 		
+		if grid:
+			self.REVERSEL = pygame.image.load(os.path.join('data/Grid','reverseL24.png'))
+			self.LPIECE = pygame.image.load(os.path.join('data/Grid','LBlock24.png'))
+			self.LINEPIECE = pygame.image.load(os.path.join('data/Grid','lineBlock24.png'))
+			self.ZPIECE = pygame.image.load(os.path.join('data/Grid','zBlock24.png'))
+			self.REVERSEZ = pygame.image.load(os.path.join('data/Grid','reverseZ24.png'))
+			self.SQUARE = pygame.image.load(os.path.join('data/Grid','square24.png'))
+			self.TPIECE = pygame.image.load(os.path.join('data/Grid','tSquare24.png'))
+			self.background = pygame.image.load(os.path.join('data/Grid','backgroundExtended.png'))			
+		else:
+			self.REVERSEL = pygame.image.load(os.path.join('data/NoGrid','reverseL24.png'))
+			self.LPIECE = pygame.image.load(os.path.join('data/NoGrid','LBlock24.png'))
+			self.LINEPIECE = pygame.image.load(os.path.join('data/NoGrid','lineBlock24.png'))
+			self.ZPIECE = pygame.image.load(os.path.join('data/NoGrid','zBlock24.png'))
+			self.REVERSEZ = pygame.image.load(os.path.join('data/NoGrid','reverseZ24.png'))
+			self.SQUARE = pygame.image.load(os.path.join('data/NoGrid','square24.png'))
+			self.TPIECE = pygame.image.load(os.path.join('data/NoGrid','tSquare24.png'))
+			self.background = pygame.image.load(os.path.join('data/NoGrid','backgroundExtended.png'))
 		
 		self.EMPTY = "EMPTY"
-		self.REVERSEL = pygame.image.load(os.path.join('data','reverseL24.png'))
-		self.LPIECE = pygame.image.load(os.path.join('data','Lblock24.png'))
-		self.LINEPIECE = pygame.image.load(os.path.join('data','lineBlock24.png'))
-		self.ZPIECE = pygame.image.load(os.path.join('data','zBlock24.png'))
-		self.REVERSEZ = pygame.image.load(os.path.join('data','reverseZ24.png'))
-		self.SQUARE = pygame.image.load(os.path.join('data','square24.png'))
-		self.TPIECE = pygame.image.load(os.path.join('data','tSquare24.png'))
 		
 		self.TPIECEMINI = pygame.image.load(os.path.join('data','tPieceMini.png'))
 		self.ZPIECEMINI = pygame.image.load(os.path.join('data','zPieceMini.png'))
@@ -64,7 +78,7 @@ class GUI:
 		self.playAgainMenuButton = pygame.image.load(os.path.join('data','playAgainButton.png'))
 		self.playAgainMenuButtonMarked = pygame.image.load(os.path.join('data','playAgainButtonMarked.png'))
 
-		self.background = pygame.image.load(os.path.join('data','backgroundExtended.png'))
+
 		self.topCover = pygame.image.load(os.path.join('data','topCover24.png'))
 		
 		self.highscorePopUpImage = pygame.image.load(os.path.join('data', 'highscorePopUp.png'))
@@ -86,9 +100,9 @@ class GUI:
 
 		self.gameOverImage = self.gameOverFont.render("GAME OVER", True, (255, 0, 0))
 		self.gamePausedText = self.gameOverFont.render("PAUSED", True, (255, 0, 0))
-		self.scoreText = self.scoreTextFont.render("SCORE: ", True, (0,255,0))
-		self.linesText = self.levelFont.render("LINES: ", True, (0,255,0))
-		self.levelText = self.levelFont.render("LEVEL: ", True, (0,255,0))
+		self.scoreText = self.scoreTextFont.render("SCORE: ", True, (255,255,255))
+		self.linesText = self.levelFont.render("LINES: ", True, (255,255,255))
+		self.levelText = self.levelFont.render("LEVEL: ", True, (255,255,255))
 		self.playAgainTextYes = self.playAgainMenuFont.render("YES", True, (255,255,255))
 		self.playAgainTextNo = self.playAgainMenuFont.render("NO", True, (255, 255, 255))
 		self.playAgainText = self.playAgainMenuFont.render("Do you want to play again?", True, (255,255,255))
@@ -130,17 +144,17 @@ class GUI:
 	def updateScore(self):
 		
 		
-		self.displayLevel = self.scoreFont.render(str(self.level).rjust(2,"0"), True, (0,255,0))
+		self.displayLevel = self.scoreFont.render(str(self.level).rjust(2,"0"), True, (255,255,255))
 		self.screen.blit(self.displayLevel, (387, 43))
 		
 		self.screen.blit(self.levelText, (294, 50))
 		
 		self.screen.blit(self.scoreText, (314,140))
 		
-		self.score = self.scoreFont.render(str(self.currentScore).rjust(7,"0"), True, (0,255,0))
+		self.score = self.scoreFont.render(str(self.currentScore).rjust(7,"0"), True, (255,255,255))
 		self.screen.blit(self.score, (294,175))
 		
-		self.linesScore = self.scoreFont.render(str(self.linesCleared).rjust(3,"0"), True, (0,255,0))
+		self.linesScore = self.scoreFont.render(str(self.linesCleared).rjust(3,"0"), True, (255,255,255))
 		self.screen.blit(self.linesScore, (378,90))
 		self.screen.blit(self.linesText, ( 294, 98))
 	
@@ -306,22 +320,26 @@ class GUI:
 				self.linesCleared = self.linesCleared + 1
 				scoreToAdd = 40 * (self.level + 1)
 				self.currentScore = self.currentScore + scoreToAdd
-				self.lineSound.play()
+				if self.sound:
+					self.lineSound.play()
 			elif numberOfLines == 2:
 				self.linesCleared = self.linesCleared + 2
 				scoreToAdd = 100 * (self.level + 1)
 				self.currentScore = self.currentScore + scoreToAdd
-				self.lineSound.play()
+				if self.sound:
+					self.lineSound.play()
 			elif numberOfLines == 3:
 				self.linesCleared = self.linesCleared + 3			
 				scoreToAdd = 300 * (self.level + 1)
 				self.currentScore = self.currentScore + scoreToAdd
-				self.lineSound.play()
+				if self.sound:
+					self.lineSound.play()
 			elif numberOfLines == 4:
 				self.linesCleared = self.linesCleared + 4
 				scoreToAdd = 1200 * (self.level + 1)
 				self.currentScore = self.currentScore + scoreToAdd
-				self.tetrisSound.play()
+				if self.sound:
+					self.tetrisSound.play()
 			for item in popList:
 				self.playArea.pop(item)
 				temp = []
@@ -945,7 +963,7 @@ class GUI:
 #This class takes care of everything not closely related to the GUI.	
 class Main:
 	#Initiates the main class.
-	def init(self):
+	def init(self,sound):
 		self.running = True
 		self.clock = pygame.time.Clock()
 		self.LINEDOWNEVENT = USEREVENT +1
@@ -969,7 +987,8 @@ class Main:
 		#http://home.swipnet.se/~w-22134/nmm/mitten.html
 		
 		pygame.mixer.music.load(os.path.join('data','Tetristheme.ogg'))
-		pygame.mixer.music.play(-1)
+		if sound:
+			pygame.mixer.music.play(-1)
 
 		
 	#The main part of the program. The loop which will handle everything from updates to event-handling.
@@ -1158,9 +1177,9 @@ class Main:
 		return self.returnValue
 
 		
-def start(screen):
-	main.init()
-	gui.init(screen)
+def start(screen, grid, sound):
+	main.init(sound)
+	gui.init(screen, grid, sound)
 	shouldQuit = main.loop()
 	return shouldQuit
 	 
