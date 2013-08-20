@@ -1,0 +1,29 @@
+This game was created as a project in the course
+"Multimediaprogrammering med Python".
+
+It is a simple take on the classic Tetris and
+features the usual controls.
+
+As the game progresses and your levels builds up
+you will notice that the speed also increases.
+
+In order to clear the board you need to create full
+lines on the board. To archive as high points
+as possible you need to stack up and create four
+simultaneus lines, this is also called a Tetris.
+
+It is also however fine to create single, double or
+tripple lines, but this will render you less points.
+
+
+Up: Used to spin the piece to the right.
+Left: Moves the piece one block to the left.
+Right: Moves the piece one block to the right.
+Down: Moves the piece one block downwards.
+Space: Instantly moves down the current piece.
+X: Spins the piece right.
+Z: Spins the piece left.
+P: Pauses the game.
+ESC: Takes you to the main menu.
+
+          Created by Mattias Didriksson.

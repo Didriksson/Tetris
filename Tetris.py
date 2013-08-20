@@ -7,6 +7,8 @@ Pythonversion: 2.7.5
 
 This is a simple Tetris clone, made from scratch by me. 
 
+This is the main Tetris class that handles more or less everything for the actual Tetris game.
+
 """
 
 
@@ -21,6 +23,7 @@ class GUI:
 	def init(self, sentScreen, grid, soundOption):
 		pygame.init()
 		
+		#Options that is sent from the menu class. Will later play a part as to which background to display as well as load sound resources.
 		self.sound = soundOption
 		self.screen = sentScreen
 		self.screen.fill((0,0,0))
@@ -31,8 +34,8 @@ class GUI:
 		self.nextPieces = []
 		
 		#Sound effects mainly generated from http://www.bfxr.net/
-		self.tetrisSound = pygame.mixer.Sound(os.path.join('data','tetrisFX.wav'))
-		self.lineSound = pygame.mixer.Sound(os.path.join('data','lineFX.wav'))
+		self.tetrisSound = pygame.mixer.Sound(os.path.join('data\Sound','tetrisFX.wav'))
+		self.lineSound = pygame.mixer.Sound(os.path.join('data\Sound','lineFX.wav'))
 		
 		
 		self.playAgainMarked = True
@@ -44,7 +47,8 @@ class GUI:
 		self.fadeToBlack.fill((0,0,0))
 		self.fadeToBlack.set_alpha(100)
 
-		
+		#Listens if the Grid option is selected and will load the correct resources. The pieces for the grid have a small black bar on top of them
+		#to create the grid effect on the pieces as well. This is why it is necessary to load differrent pieces resources as well, not just the BG.
 		if grid:
 			self.REVERSEL = pygame.image.load(os.path.join('data/Grid','reverseL24.png'))
 			self.LPIECE = pygame.image.load(os.path.join('data/Grid','LBlock24.png'))
@@ -66,29 +70,30 @@ class GUI:
 		
 		self.EMPTY = "EMPTY"
 		
-		self.TPIECEMINI = pygame.image.load(os.path.join('data','tPieceMini.png'))
-		self.ZPIECEMINI = pygame.image.load(os.path.join('data','zPieceMini.png'))
-		self.REVERSEZMINI = pygame.image.load(os.path.join('data','reverseZmini.png'))
-		self.LPIECEMINI = pygame.image.load(os.path.join('data','LPieceMini.png'))
-		self.REVERSELMINI = pygame.image.load(os.path.join('data','reverseLMini.png'))
-		self.LINEPIECEMINI = pygame.image.load(os.path.join('data','linePieceMini.png'))
-		self.SQUAREMINI = pygame.image.load(os.path.join('data','squarePieceMini.png'))		
+		#Loads the resources that will display in the list of pieces to display next.
+		self.TPIECEMINI = pygame.image.load(os.path.join('data\Graphics','tPieceMini.png'))
+		self.ZPIECEMINI = pygame.image.load(os.path.join('data\Graphics','zPieceMini.png'))
+		self.REVERSEZMINI = pygame.image.load(os.path.join('data\Graphics','reverseZmini.png'))
+		self.LPIECEMINI = pygame.image.load(os.path.join('data\Graphics','LPieceMini.png'))
+		self.REVERSELMINI = pygame.image.load(os.path.join('data\Graphics','reverseLMini.png'))
+		self.LINEPIECEMINI = pygame.image.load(os.path.join('data\Graphics','linePieceMini.png'))
+		self.SQUAREMINI = pygame.image.load(os.path.join('data\Graphics','squarePieceMini.png'))		
 		
-		self.playAgainMenuImage = pygame.image.load(os.path.join('data','playAgainMenu.png'))
-		self.playAgainMenuButton = pygame.image.load(os.path.join('data','playAgainButton.png'))
-		self.playAgainMenuButtonMarked = pygame.image.load(os.path.join('data','playAgainButtonMarked.png'))
+		self.playAgainMenuImage = pygame.image.load(os.path.join('data\Graphics','playAgainMenu.png'))
+		self.playAgainMenuButton = pygame.image.load(os.path.join('data\Graphics','playAgainButton.png'))
+		self.playAgainMenuButtonMarked = pygame.image.load(os.path.join('data\Graphics','playAgainButtonMarked.png'))
 
 
-		self.topCover = pygame.image.load(os.path.join('data','topCover24.png'))
+		self.topCover = pygame.image.load(os.path.join('data\Graphics','topCover24.png'))
 		
-		self.highscorePopUpImage = pygame.image.load(os.path.join('data', 'highscorePopUp.png'))
+		self.highscorePopUpImage = pygame.image.load(os.path.join('data\Graphics', 'highscorePopUp.png'))
 		
 		
 		self.level = 0
 		
 		
 		
-
+		#Initialisez the fonts.
 		self.gameOverFont = pygame.font.SysFont("Arial Black", 50)
 		self.scoreFont = pygame.font.SysFont("Arial Black", 30)
 		self.levelFont = pygame.font.SysFont("Arial Black", 20)	
@@ -97,18 +102,19 @@ class GUI:
 		self.enterNameFont = pygame.font.SysFont("Arial Black", 15)
 		
 		
-
+		#Renders most of the text objects required.
 		self.gameOverImage = self.gameOverFont.render("GAME OVER", True, (255, 0, 0))
 		self.gamePausedText = self.gameOverFont.render("PAUSED", True, (255, 0, 0))
-		self.scoreText = self.scoreTextFont.render("SCORE: ", True, (255,255,255))
-		self.linesText = self.levelFont.render("LINES: ", True, (255,255,255))
-		self.levelText = self.levelFont.render("LEVEL: ", True, (255,255,255))
+		self.scoreText = self.scoreTextFont.render("SCORE: ", True, (171,4,4))
+		self.linesText = self.levelFont.render("LINES: ", True, (171,4,4))
+		self.levelText = self.levelFont.render("LEVEL: ", True, (171,4,4))
 		self.playAgainTextYes = self.playAgainMenuFont.render("YES", True, (255,255,255))
 		self.playAgainTextNo = self.playAgainMenuFont.render("NO", True, (255, 255, 255))
 		self.playAgainText = self.playAgainMenuFont.render("Do you want to play again?", True, (255,255,255))
 		self.confirmExitText = self.playAgainMenuFont.render("Do you really want to quit?", True, (255,255,255))
 		
-		
+		#These are the main variables required throughout the game. The playArea list is the list representing the entire
+		#matrix and is the single most important one.
 		self.playerName = ""
 		self.currentPosition = ""
 		self.activePiece = []
@@ -122,6 +128,7 @@ class GUI:
 		self.currentScore = 0
 		self.linesCleared = 0
 		
+		#Initializes the play area with empty pieces.
 		for line in range(0,self.lines):
 			temp = []
 			for col in range(0,self.cols):
@@ -141,24 +148,25 @@ class GUI:
 		self.reDraw()
 	
 	#Scoring found on the following webpage: http://tetris.wikia.com/wiki/Scoring In order to have as authentic feeling as possible.
+	#This method only updates the actual GUI of the score and handles none of the updating of the score itself.
 	def updateScore(self):
 		
 		
-		self.displayLevel = self.scoreFont.render(str(self.level).rjust(2,"0"), True, (255,255,255))
+		self.displayLevel = self.scoreFont.render(str(self.level).rjust(2,"0"), True, (171,4,4))
 		self.screen.blit(self.displayLevel, (387, 43))
 		
 		self.screen.blit(self.levelText, (294, 50))
 		
 		self.screen.blit(self.scoreText, (314,140))
 		
-		self.score = self.scoreFont.render(str(self.currentScore).rjust(7,"0"), True, (255,255,255))
+		self.score = self.scoreFont.render(str(self.currentScore).rjust(7,"0"), True, (171,4,4))
 		self.screen.blit(self.score, (294,175))
 		
-		self.linesScore = self.scoreFont.render(str(self.linesCleared).rjust(3,"0"), True, (255,255,255))
+		self.linesScore = self.scoreFont.render(str(self.linesCleared).rjust(3,"0"), True, (171,4,4))
 		self.screen.blit(self.linesScore, (378,90))
 		self.screen.blit(self.linesText, ( 294, 98))
 	
-	#Just as the name states this will take of redrawing the board.	
+	#Just as the name states this will take of redrawing the board.	Called throughout the program whenever an update is necessary.
 	def reDraw(self):
 		self.screen.blit(self.background,(24,0))
 		self.updateScore()
@@ -174,7 +182,9 @@ class GUI:
 	
 		pygame.display.flip()
 
-	#Adds a piece to the board. Will receive a call from the "new piece" function in order to know which piece to add.	
+	#Adds a piece to the board. Will receive a call from the "new piece" function in order to know which piece to add.
+	#Could probably have been refactored to take smaller amount of lines, however this keeps the readability up and makes it easy to understand what the
+	#program does.
 	def addPiece(self):
 		if self.nextPieces[0] == self.REVERSELMINI:
 			self.nextPieces.pop(0)
@@ -249,6 +259,8 @@ class GUI:
 			self.currentPosition = "up"
 		
 	#Takes care of moving the board down one line, this can be called either when the user presses the down key, or as the piece is falling down.
+	#Very simple method overall, however will keep track of the "instantPossible" as the player can press the space key and force the piece down as
+	#far as possible. If InstantPossible becomes False the next piece will be pushed into the board.
 	def lineDown(self):
 			
 			self.instantPossible = True
@@ -352,7 +364,9 @@ class GUI:
 
 			if(self.linesCleared >= ((self.level * 10) + 10)):
 				self.levelUp()
-				
+	
+	#Made as a supplementary method to the rotatePiece method. This will first check all the moves the piece are supposed to take, and
+	#then move them one after the other if the check is fulfilled.
 	def rotateCheckAndMove(self, moveX1, moveY1, moveX2, moveY2, moveX3, moveY3, moveX4, moveY4):
 		
 			moveX = moveX1 + self.adjustMoveX
@@ -405,7 +419,9 @@ class GUI:
 							allWentWell = True
 							return allWentWell
 	
-	#Handles rotations of the piece.
+	#Handles rotations of the piece. Will check the current position the piece is in, and then contact the rotateCheckAndmove method.
+	#As my Tetris is not consisted of one large sprite per piece I can not just rotate the sprite, but requires to move the pieces around
+	#the playarea to rotate the entire piece.
 	def rotatePiece(self,rotateDirection):
 		self.adjustMoveY = 0 
 		self.adjustMoveX = 0
@@ -803,7 +819,8 @@ class GUI:
 						allWentWell = False
 						return allWentWell
 
-	#Is invoked whenever the user presses the left-key on the keyboard. This will take care of, you guessed it, moving the piece to the left.	
+	#Is invoked whenever the user presses the left-key on the keyboard. This will take care of, you guessed it, moving the piece to the left.
+	#Will check so that block next to the pieces is empty, and if there is even one block blocking the path the move will not be executed.
 	def lineLeft(self):
 		emptyBlockLeft = True
 		self.activePiece.sort(key = itemgetter(1))
@@ -872,7 +889,7 @@ class GUI:
 				else:
 					break
 					
-	#Randoms a new piece and contacts "addPiece" function. At the moment every piece will be randomed when called, with the same probability.
+	#Randoms a new piece and contacts "addPiece" function. At the moment every piece will be randomed when called, with the same probability for each piece.
 	def newPiece(self):
 		randomedPiece = random.randint(0, 6)
 		if randomedPiece == 0:
@@ -895,17 +912,23 @@ class GUI:
 		
 		elif randomedPiece == 6:
 			self.nextPieces.append(self.TPIECEMINI)
-			
+	#Adds one level and will increase the speed.		
 	def levelUp(self):
 		self.level = self.level + 1
 		main.speedDown = int((main.speedDown * 0.85)) 
 		pygame.time.set_timer(main.LINEDOWNEVENT, main.speedDown)
 	
-	#Handles display of the coming pieces
+	#Handles display of the coming pieces. Blits out the list of the following pieces.
+	#Checks if the piece is a line piece or square piece as these are smaller/longer than the other pieces.
 	def piecesList(self):
 		for index, item in enumerate(self.nextPieces):
-			self.screen.blit(item, (334,((index + 1) * 80 + 180)))
-		
+			if item == self.LINEPIECEMINI:
+				self.screen.blit(item, (318,((index + 1) * 80 + 180)))
+			elif item == self.SQUAREMINI:
+				self.screen.blit(item, (340,((index + 1) * 80 + 180)))
+			else:
+				self.screen.blit(item, (330,((index + 1) * 80 + 180)))
+				
 	#Displaying a pop up window for entering players name, this only happens if player is within the top 20. Input box have been inspired from
 	#http://www.pygame.org/pcr/inputbox/
 	def highscorePopUpWindow(self):
@@ -941,7 +964,7 @@ class GUI:
 				
 		if main.highscoreList:
 			data.writeData(main.highscoreList)
-			
+	#Displays the pop up window for playing again. Will of course assume that the player wants to play again from the start, and mark the "YES" option first.		
 	def playAgainMenu(self):
 		self.screen.blit(self.playAgainMenuImage, (70,200))
 		self.screen.blit(self.playAgainText, (80,225))
@@ -953,7 +976,8 @@ class GUI:
 			self.screen.blit(self.playAgainMenuButton, (225,260))
 		self.screen.blit(self.playAgainTextYes, ( 135, 263))
 		self.screen.blit(self.playAgainTextNo, ( 263, 263))	
-
+	#If player presses the space key they want the piece to move down as far as possible.
+	#This loop will contact lineDown method repeatedly.
 	def instantDown(self):
 		for i in range(20):
 			self.fromInstant = True
@@ -986,14 +1010,17 @@ class Main:
 		
 		#http://home.swipnet.se/~w-22134/nmm/mitten.html
 		
-		pygame.mixer.music.load(os.path.join('data','Tetristheme.ogg'))
+		#Checks if player wants to have sound, and if so, starts playing the song.
+		pygame.mixer.music.load(os.path.join('data\Sound','Tetristheme.ogg'))
 		if sound:
 			pygame.mixer.music.play(-1)
 
 		
 	#The main part of the program. The loop which will handle everything from updates to event-handling.
 	def loop(self):
-
+		
+		#Loops is consisting of several checks and will therefore also have several "loops" nestled in it. This is because the
+		#program needs to keep track of the returned values of menues such as pause menu, exit menu, play again menu as well as input of name for highscore.
 		self.returnValue = ""	
 		while self.running:
 			if not self.gameOver:
@@ -1154,6 +1181,7 @@ class Main:
 				if gui.madeHighScore:
 					gui.highscorePopUpWindow()
 				self.optionPicked = False
+				gui.playAgainMarked = True
 				while not self.optionPicked:
 					for e in pygame.event.get():
 						if e.type == KEYDOWN:
@@ -1176,7 +1204,7 @@ class Main:
 				
 		return self.returnValue
 
-		
+#Entry point for the Tetris class. This is created so that the program always will load the resources in the correct order.		
 def start(screen, grid, sound):
 	main.init(sound)
 	gui.init(screen, grid, sound)
